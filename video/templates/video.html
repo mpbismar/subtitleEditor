@@ -11,15 +11,19 @@
         <script type="text/javascript" src="{% static "js.player/leanbackPlayer.de.js" %}"></script>
 </head>
 <body>
-	<h1><center>HPI Subtitle Video Player</center></h1>
-	<div class="leanback-player-video">
-		<video id="video" width=900px height=600px controls preload="metadata">
-			<source src="{% static "video/webtech2015-w1-2-lecturer-SD.mp4" %}" type="video/mp4">
-			<source src="{% static "video/webtech2015-w1-2-lecturer-SD.webm" %}" type="video/webm">
+    {%  if video_name %}
+	    <h1><center>HPI Subtitle Video Player</center></h1>
+	    <div class="leanback-player-video">
+		    <video id="video" width=900px height=600px controls preload="metadata">
+			    <source src="static/video/{{ video_name }}.mp4" type="video/mp4">
+			    <source src="static/video/{{ video_name }}.webm"type="video/webm">
 	<!--		<track label="Report mistake.." kind="subtitles" srclang="en" src="{% static "subtitles/vtt/webtech2015-w1-2.vtt" %}" default>
-			<track label="Chinese" kind="subtitles" srclang="ch" src="{% static "subtitles/vtt/webtech2015-w1-2-2.vtt" %}"> -->
-		</video>
-	</div>
+			    <track label="Chinese" kind="subtitles" srclang="ch" src="{% static "subtitles/vtt/webtech2015-w1-2-2.vtt" %}"> -->
+		    </video>
+	    </div>
+    {% else %}
+        <p>Invalid ID!</p>
+    {% endif %}
 <!--
 	<div id="video-controls" class="controls" data-state="hidden">
 		<button id="playpause" type="button" data-state="play">Play/Pause</button>
