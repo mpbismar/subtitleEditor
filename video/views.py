@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from .models import Video
 
 def index(request):
@@ -10,3 +10,10 @@ def video(request, video_id):
     idvideo = Video(vid=video_id)
     context = {'idvideo': idvideo}
     return render(request, 'video.html', context)
+
+def login(request):
+
+    # if this is a POST request we need to process the form data
+
+        return render(request, 'login.html',{})
+
