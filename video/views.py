@@ -15,9 +15,7 @@ def video(request, video_id):
 def login(request):
 
     # if this is a POST request we need to process the form data
-    if request.method == 'POST':
-        
-    else:
+
         return render(request, 'login.html',{})
 
 
