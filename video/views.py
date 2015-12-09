@@ -1,5 +1,5 @@
 from django.shortcuts import render, render_to_response
-from .models import Video
+from .models import Video,User
 
 def index(request):
     latest_video_list = Video.objects.order_by('-pub_date')[:5]
@@ -14,6 +14,10 @@ def video(request, video_id):
 def login(request):
 
     # if this is a POST request we need to process the form data
-
+    if request.method == 'POST':
+        user=User(name=request.POST.get('username'))
+        user.save()
+        return render(request, 'video.html',{})
+    else :
         return render(request, 'login.html',{})
 
