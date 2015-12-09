@@ -1,8 +1,11 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
+from .models import Video
 
 def index(request):
-	#with open('html/index.html', 'r') as html_file:
-	#	html = html_file.read()
-	return render_to_response('index.html')
-#return HttpResponse("This will be a video!")
+    latest_video_list = Video.objects.order_by('-pub_date')[:5]
+    output = ', '.join([q.name for q in latest_video_list])
+    return HttpResponse(output)
+
+def video(request, video_id):
+    return render_to_response('video.html')
