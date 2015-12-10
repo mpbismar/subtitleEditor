@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-</head>
-<body>
-<form action="/login/" method="post">{% csrf_token %}
-    Username:
-    <input type="text" name="username"><br><br>
-    Password:
-    <input type="password" name="password"><br><br>
-    <input type="submit" value="Submit">
-    <br><br>
-</form>
-    <form action="/register">
-    <input type="submit" value="Register">
-</form>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Register</title>
+    </head>
+    <body>
+        <form action="login/" method="post">{% csrf_token %}
+            Username:<input type="text" name="username"><br><br>
+            Password:<input type="password" name="password"><br><br>
+            <input type="submit" value="Login">
+        </form>
+        <p>{{ message }}</p>
+        <form action="register/">
+            <input type="submit" value="Register">
+        </form>
+    </body>
 </html>

@@ -6,13 +6,14 @@ class Video(models.Model):
     lang = models.CharField(max_length=5)
     sub_langs = models.CharField(max_length=50)
     pub_date = models.DateTimeField(auto_now=True)
-    password  = models.CharField(max_length=40)
 
 class User(models.Model):
     uid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=40)
     n_apr = models.PositiveIntegerField(default=0)
     n_cor = models.PositiveIntegerField(default=0)
+    password  = models.CharField(max_length=40)
+
 
 class Sequence(models.Model):
     sid = models.AutoField(primary_key=True)

@@ -12,8 +12,8 @@
 </head>
 <body>
     {%  if idvideo %}
-	    <h1><center>HPI Subtitle Video Player</center></h1>
-	    <div class="leanback-player-video">
+	    <h1 text-align="middle">{{ idvideo.name }}</h1>
+	    <div class="leanback-player-video" margin-left="auto" margin-right="auto">
 		    <video id="video" width=900px height=600px controls preload="metadata">
 			    <source src="/static/video/{{ idvideo.name }}.mp4" type="video/mp4">
 			    <source src="/static/video/{{ idvideo.name }}.webm" type="video/webm">
@@ -24,6 +24,9 @@
     {% else %}
         <h1>Invalid ID!</h1>
     {% endif %}
+    <form action="index/">
+            <input type="submit" value="Back">
+    </form>
 <!--
 	<div id="video-controls" class="controls" data-state="hidden">
 		<button id="playpause" type="button" data-state="play">Play/Pause</button>
