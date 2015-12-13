@@ -14,7 +14,6 @@ class User(models.Model):
     n_cor = models.PositiveIntegerField(default=0)
     password  = models.CharField(max_length=40)
 
-
 class Sequence(models.Model):
     sid = models.AutoField(primary_key=True)
     vid = models.ForeignKey(Video,to_field="vid")

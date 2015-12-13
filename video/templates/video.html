@@ -4,27 +4,41 @@
 	{% load staticfiles %}
 	<title>subhpi: Videos</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" type="text/css" href="{% static "css.player/leanbackPlayer.default.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "css.player/themes/leanbackPlayer.vim.css" %}"/>
 
-        <script type="text/javascript" src="{% static "js.player/leanbackPlayer.pack.js" %}"></script>
-        <script type="text/javascript" src="{% static "js.player/leanbackPlayer.en.js" %}"></script>
-        <script type="text/javascript" src="{% static "js.player/leanbackPlayer.de.js" %}"></script>
+    <script type="text/javascript" src="{% static "js.player/leanbackPlayer.pack.js" %}"></script>
+    <script type="text/javascript" src="{% static "js.player/leanbackPlayer.en.js" %}"></script>
+    <script type="text/javascript" src="{% static "js.player/leanbackPlayer.de.js" %}"></script>
+  <!--  { % if idvideo %}
+        <style type="text/css">
+        #sub {position: absolute;
+            height: 100px; width: auto;
+            left: 350px; top: 250px;
+            opacity: 0.5; color:#FFFFFF;
+            background-color:#000000}
+        #sub:hover {opacity:1.0}
+        </style>
+    { % endif %} -->
 </head>
 <body>
-    {%  if idvideo %}
+    {% if idvideo %}
+       <!-- <div id="sub">
+            This could be any sub!
+        </div> -->
 	    <h1 text-align="middle">{{ idvideo.name }}</h1>
-	    <div class="leanback-player-video" margin-left="auto" margin-right="auto">
+	    <div class="leanback-player-video">
 		    <video id="video" width=900px height=600px controls preload="metadata">
 			    <source src="/static/video/{{ idvideo.name }}.mp4" type="video/mp4">
 			    <source src="/static/video/{{ idvideo.name }}.webm" type="video/webm">
-	<!--		<track label="Report mistake.." kind="subtitles" srclang="en" src="% static "subtitles/vtt/webtech2015-w1-2.vtt" %}" default>
-			    <track label="Chinese" kind="subtitles" srclang="ch" src="% static "subtitles/vtt/webtech2015-w1-2-2.vtt" %}"> -->
-		    </video>
+                {% for sub_lang in sub_langs %}
+                    <track label="{{ sub_lang }}" kind="subtitles" srclang="{{ sub_lang }}" src="/static/subtitles/vtt/{{ idvideo.name }}_{{ sub_lang }}.vtt" default>
+		        {% endfor %}
+            </video>
 	    </div>
     {% else %}
         <h1>Invalid ID!</h1>
     {% endif %}
-    <form action="index/">
+    <form action="../index">
             <input type="submit" value="Back">
     </form>
 <!--
