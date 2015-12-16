@@ -1,5 +1,5 @@
 from django.shortcuts import render, render_to_response, redirect ,HttpResponse
-from .models import Video,User,Sequence
+from .models import Video,User,Sequence, Correction
 import os
 
 def index(request, user_id):
@@ -8,8 +8,32 @@ def index(request, user_id):
                'user_id':user_id}
     return render(request, 'index.html', context)
 
-def video(request,user_id, video_id):
+def video(request,user_id, video_id, edit):
     if Video.objects.filter(vid=video_id):
+        if request.method == 'POST':
+            for seq in Sequence.objects.filter(vid_id=video_id):
+                new_con = request.POST.get('sub'+str(seq.sid))
+                if seq.content != new_con:
+                    corrs = Correction.objects.filter(sid_id=seq.sid)
+                    if corrs:
+                        ex = False
+                        for corr in corrs:
+                            uids = corr.uids.split(',')
+                            if corr.new_content==new_con:
+                                if not uids.__contains__(user_id):
+                                    uids.append(user_id)
+                                    corr.uids=','.join(uids)
+                                    corr.save()
+                                ex = True
+                            else:
+                                if uids.__contains__(user_id):
+                                    uids.remove(user_id)
+                                    corr.uids=','.join(uids)
+                                    corr.save()
+                        if not ex:
+                            Correction(sid_id=seq.sid,vid_id=seq.vid_id,uids=user_id,new_content=new_con).save()
+                    else:
+                        Correction(sid_id=seq.sid,vid_id=seq.vid_id,uids=user_id,new_content=new_con).save()
         idvideo = Video.objects.get(vid=video_id)
         path = "video/static/subtitles/vtt/"
         if not os.path.exists(path):
@@ -21,6 +45,11 @@ def video(request,user_id, video_id):
             vttFile.write("WEBVTT\n\n")
             i = 0
             for sub in subs:
+                corrs = Correction.objects.filter(sid=sub.sid)
+                if corrs:
+                    for corr in corrs:
+                        if corr.uids.split(',').__contains__(user_id):
+                            sub.content = corr.new_content
                 i += 1
                 stime = str(sub.start/1000/60/60).zfill(2)+":"
                 stime += str(sub.start/1000/60%60).zfill(2)+":"
@@ -35,10 +64,17 @@ def video(request,user_id, video_id):
                 vttFile.write(str(i)+"\n")
                 vttFile.write(stime+" --> "+etime+"\n")
                 vttFile.write(sub.content+"\n\n")
-            vttFile.flush()
             vttFile.close()
+        subs_all = []
+        for i in range(Sequence.objects.filter(vid_id=video_id,lang=idvideo.sub_langs.split(',')[0]).count()):
+            subs = []
+            for lang in idvideo.sub_langs.split(","):
+                subs.append(Sequence.objects.filter(vid_id=video_id,lang=lang).order_by('start')[i])
+            subs_all.append(subs)
         context = {'idvideo': idvideo,
-                   'sub_langs': idvideo.sub_langs.split(",")}
+                   'subs_all': subs_all,
+                   'sub_langs': idvideo.sub_langs.split(","),
+                   'edit': edit=="edit"}
         return render(request, 'video.html', context)
     else:
         return redirect('/'+str(user_id)+'/index')

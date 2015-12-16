@@ -4,11 +4,13 @@
 	{% load staticfiles %}
 	<title>subhpi: Videos</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="{% static "css.player/themes/leanbackPlayer.vim.css" %}"/>
-
-    <script type="text/javascript" src="{% static "js.player/leanbackPlayer.pack.js" %}"></script>
-    <script type="text/javascript" src="{% static "js.player/leanbackPlayer.en.js" %}"></script>
-    <script type="text/javascript" src="{% static "js.player/leanbackPlayer.de.js" %}"></script>
+    <link href="http://vjs.zencdn.net/5.3.0/video-js.css" rel="stylesheet">
+    <script src="http://vjs.zencdn.net/ie8/1.1.0/videojs-ie8.min.js"></script>
+    <style type="text/css">
+        #subedit {position: absolute;
+            height: auto; width: auto;
+            left: 1000px; top: 100px;}
+    </style>
   <!--  { % if idvideo %}
         <style type="text/css">
         #sub {position: absolute;
@@ -21,26 +23,42 @@
     { % endif %} -->
 </head>
 <body>
-    {% if idvideo %}
-       <!-- <div id="sub">
-            This could be any sub!
-        </div> -->
-	    <h1 text-align="middle">{{ idvideo.name }}</h1>
-	    <div class="leanback-player-video">
-		    <video id="video" width=900px height=600px controls preload="metadata">
-			    <source src="/static/video/{{ idvideo.name }}.mp4" type="video/mp4">
-			    <source src="/static/video/{{ idvideo.name }}.webm" type="video/webm">
-                {% for sub_lang in sub_langs %}
-                    <track label="{{ sub_lang }}" kind="subtitles" srclang="{{ sub_lang }}" src="/static/subtitles/vtt/{{ idvideo.name }}_{{ sub_lang }}.vtt" default>
-		        {% endfor %}
-            </video>
-	    </div>
+    <!-- <div id="sub">
+    This could be any sub!
+    </div> -->
+	<h1 text-align="middle">{{ idvideo.name }}</h1>
+    <video id="my-video" class="video-js" controls preload="auto" width="900" height="600" data-setup="{}">
+        <source src="/static/video/{{ idvideo.name }}.mp4" type="video/mp4">
+        <source src="/static/video/{{ idvideo.name }}.webm" type="video/webm">
+        {% for sub_lang in sub_langs %}
+            <track label="{{ sub_lang }}" kind="subtitles" srclang="{{ sub_lang }}" src="/static/subtitles/vtt/{{ idvideo.name }}_{{ sub_lang }}.vtt" default>
+        {% endfor %}
+        <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a web browser that
+            <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+        </p>
+    </video>
+    <script src="http://vjs.zencdn.net/5.3.0/video.js"></script>
+    {% if edit %}
+        <div id="subedit">
+            <form action=".." method="post"> {% csrf_token %}
+                {% for subs in subs_all %}
+                    {% for sub in subs %}
+                        <input type="text" name="sub{{ sub.sid }}" value="{{ sub.content }}">
+                    {% endfor %}
+                    <br>
+                {% endfor %}
+                <input type="submit" value="Save Changes">
+            </form>
+        </div>
     {% else %}
-        <h1>Invalid ID!</h1>
-    {% endif %}
     <form action="../index">
             <input type="submit" value="Back">
     </form>
+    <form action="edit/">
+            <input type="submit" value="Edit Subtitles">
+    </form>
+    {% endif %}
 <!--
 	<div id="video-controls" class="controls" data-state="hidden">
 		<button id="playpause" type="button" data-state="play">Play/Pause</button>
