@@ -5,7 +5,7 @@ class Video(models.Model):
     name = models.CharField(max_length=40)
     lang = models.CharField(max_length=5)
     sub_langs = models.CharField(max_length=50)
-    pub_date = models.DateTimeField(auto_now=True)
+    #pub_date = models.DateTimeField(auto_now_add=True)
 
 class User(models.Model):
     uid = models.AutoField(primary_key=True)
@@ -21,10 +21,14 @@ class Sequence(models.Model):
     content = models.CharField(max_length=150)
     start = models.PositiveIntegerField(serialize=False)
     end = models.PositiveIntegerField(serialize=False)
+    creator = models.ForeignKey(User,to_field="uid")
+    rating = models.PositiveIntegerField(default=0)
+    pub_date = models.DateTimeField(auto_now_add=True)
 
 class Correction(models.Model):
     vid = models.ForeignKey(Video,to_field="vid")
     sid = models.ForeignKey(Sequence,to_field="sid")
+    cid = models.AutoField(primary_key=True)
     uids = models.CharField(max_length=500)
     new_content = models.CharField(max_length=150)
-    pub_date = models.DateTimeField(auto_now=True)
+    pub_date = models.DateTimeField(auto_now_add=True)

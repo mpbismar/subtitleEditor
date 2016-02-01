@@ -1,10 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html>
 <body>
+{% if correction_list %}
+    <ul>
+    {% for correction in correction_list %}
+        <li>{{ correction.new_content }}</li>
+    {% endfor %}
+    </ul>
+    <h1>tabellarische ansicht</h1>
+    <table>
+        <script type="text/javascript">
+            var i = 0;
+            var array = new Array();
+        </script>
+        {% for correction in correction_list %}
+            <script type="text/javascript">
+                i++;
+            </script>
+        <tr>
+            <th>{{ correction.new_content }}</th>
+            <th><button onclick="myFunction{{ correction.sid }}()" type="button" id="verify{{ correction.sid }}">Verify</button>
+                <script type="text/javascript">
+                    function myFunction{{ correction.sid }}() {
+                            document.getElementById("verified{{ correction.sid }}").innerHTML = "The version is verified"
+                    }
+                    /*(function(opt) {
+                    return function() {
+                     showParam(opt);
+                    };
+                })(arrOptions[i]);
+                   function showParam(value) {
+                alert(value);
+            }*/
+                </script>
+            </th>
+            <th>
+                <p id="verified{{ correction.sid }}"></p>
+                <p>{{ correction.sid}}</p>
+            </th>
+        </tr>
+        {% endfor %}
+        <tr>
+            <th>
+                <p id="verified"></p>
+                <p><script type="text/javascript"> //document.write(i) </script></p>
+            </th>
+        </tr>
+    </table>
+{% else %}
+    <p>No corrections available.</p>
+{% endif %}
 
+ <div id="divButtons">
+
+        </div>
+
+        <script type="text/javascript">
+            var arrOptions = new Array();
+
+            for (var i = 0; i < 10; i++) {
+                arrOptions[i] = "option" + i;
+            }
+
+            for (var i = 0; i < arrOptions.length; i++) {
+                var btnShow = document.createElement("input");
+                btnShow.setAttribute("type", "button");
+                btnShow.value = "Show Me Option";
+                var optionPar = arrOptions[i];
+                btnShow.onclick = (function(opt) {
+                    return function() {
+                     showParam(opt);
+                    };
+                })(arrOptions[i]);
+
+                document.getElementById('divButtons').appendChild(btnShow);
+            }
+
+            function showParam(value) {
+                alert(value);
+            }
+        </script>
 </body>
 </html>
