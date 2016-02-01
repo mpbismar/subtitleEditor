@@ -5,7 +5,7 @@ class Video(models.Model):
     name = models.CharField(max_length=40)
     lang = models.CharField(max_length=5)
     sub_langs = models.CharField(max_length=50)
-    #pub_date = models.DateTimeField(auto_now_add=True)
+    pub_date = models.DateTimeField(auto_now_add=True)
 
 class User(models.Model):
     uid = models.AutoField(primary_key=True)

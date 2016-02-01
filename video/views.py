@@ -4,7 +4,7 @@ import os
 from django.template import loader
 
 def index(request, user_id):
-    latest_video_list = Video.objects.order_by('name')[:5]
+    latest_video_list = Video.objects.order_by('-pub_date')[:5]
     context = {'latest_video_list': latest_video_list,
                'user_id':user_id}
     return render(request, 'index.html', context)
