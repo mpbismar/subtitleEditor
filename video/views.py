@@ -5,7 +5,7 @@ import os
 def index(request, user_id):
     latest_video_list = Video.objects.order_by('-pub_date')[:5]
     context = {'latest_video_list': latest_video_list,
-               'user_id':user_id}
+               'user': User.objects.get(uid=user_id)}
     return render(request, 'index.html', context)
 
 def video(request,user_id, video_id, edit):
@@ -66,15 +66,31 @@ def video(request,user_id, video_id, edit):
                 vttFile.write(sub.content+"\n\n")
             vttFile.close()
         subs_all = []
-        for i in range(Sequence.objects.filter(vid_id=video_id,lang=idvideo.sub_langs.split(',')[0]).count()):
+        max_versions = 0
+        for lang in idvideo.sub_langs.split(","):
+            seqs = Sequence.objects.filter(vid_id=video_id,lang=lang).order_by('start')
             subs = []
-            for lang in idvideo.sub_langs.split(","):
-                subs.append(Sequence.objects.filter(vid_id=video_id,lang=lang).order_by('start')[i])
+            versions = []
+            start = seqs[0].start
+            for seq in seqs:
+                if seq.start != start:
+                    if versions.__len__() > max_versions:
+                        max_versions = versions.__len__()
+                    subs.append(versions)
+                    versions = []
+                    start = seq.start
+                versions.append(seq)
+            subs.append(versions)
             subs_all.append(subs)
+
+        times = Sequence.objects.filter(vid_id=video_id,lang=idvideo.sub_langs.split(',')[0]).order_by('start')
         context = {'idvideo': idvideo,
                    'subs_all': subs_all,
                    'sub_langs': idvideo.sub_langs.split(","),
-                   'edit': edit=="edit"}
+                   'edit': edit=="edit",
+                   'times': times,
+                   'nseq': times.__len__(),
+                   'nversions': range(max_versions)}
         return render(request, 'video.html', context)
     else:
         return redirect('/'+str(user_id)+'/index')

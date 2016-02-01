@@ -2,32 +2,38 @@
 <html lang="en-IE">
 <head>
 	{% load staticfiles %}
-	<title>subhpi: Videos</title>
+	<title>SubHPI: {{ idvideo.name }}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="http://vjs.zencdn.net/5.3.0/video-js.css" rel="stylesheet">
     <script src="http://vjs.zencdn.net/ie8/1.1.0/videojs-ie8.min.js"></script>
     <style type="text/css">
         #subedit {position: absolute;
             height: auto; width: auto;
-            left: 1000px; top: 100px;}
-    </style>
-  <!--  { % if idvideo %}
-        <style type="text/css">
-        #sub {position: absolute;
-            height: 100px; width: auto;
-            left: 350px; top: 250px;
-            opacity: 0.5; color:#FFFFFF;
+            left: 1100px; top: 250px;}
+        #video {margin:100px;}
+    {% for i in nversions %}
+        #sub{{ i }} {position: absolute;
+            z-index: -1;
+            height: auto; width: auto;
+            left: 440px; top: {{ 780 + i|mul:100 }}px;
+            opacity: 0.6; color:#FFFFFF;
             background-color:#000000}
-        #sub:hover {opacity:1.0}
-        </style>
-    { % endif %} -->
+        #sub{{ i }}:hover {opacity:1.0;
+            background-color:#0AA00A}
+    {% endfor %}
+    </style>
 </head>
 <body>
-    <!-- <div id="sub">
+    {% for i in nversions %}
+        <div id="sub{{ i }}">
+            sub{{ i }}
+        </div>
+    {% endfor %}
+    <textarea id="subedit">
     This could be any sub!
-    </div> -->
-	<h1 text-align="middle">{{ idvideo.name }}</h1>
-    <video id="my-video" class="video-js" controls preload="auto" width="900" height="600" data-setup="{}">
+    </textarea>
+	<h1 margin="100px">{{ idvideo.name }}</h1>
+    <video id="video" class="video-js" controls preload="auto" width="900" height="600" data-setup="{}">
         <source src="/static/video/{{ idvideo.name }}.mp4" type="video/mp4">
         <source src="/static/video/{{ idvideo.name }}.webm" type="video/webm">
         {% for sub_lang in sub_langs %}
@@ -39,40 +45,68 @@
         </p>
     </video>
     <script src="http://vjs.zencdn.net/5.3.0/video.js"></script>
-    {% if edit %}
-        <div id="subedit">
-            <form action=".." method="post"> {% csrf_token %}
-                {% for subs in subs_all %}
-                    {% for sub in subs %}
-                        <input type="text" name="sub{{ sub.sid }}" value="{{ sub.content }}">
-                    {% endfor %}
+    <!--script src="../js/player.js"></script-->
+    <script>
+        var player = videojs('video');
+        var sub = document.getElementById('sub');
+        var subedit = document.getElementById('subedit');
+        var nseq = {{ nseq }};
+        var times = [{% for time in times %} [{{ time.start }}, {{ time.end }}], {% endfor %}0];
+        var subs_all = [{%for subs_lang in subs_all%}[{%for subs in subs_lang%}[{%for sub in subs%}"{{ sub.content }}",{% endfor %}0],{% endfor %}0],{% endfor %}0]
+        var i = 0;
+        function rate() {
+            player.currentTime(0);
+            i = 0;
+            play()
+        }
+        function replay() {
+            player.currentTime(times[i][0]/1000);
+            play();
+        }
+        function toNext() {
+            i = i + 1;
+            play()
+        }
+        function play() {
+            subedit.innerHTML = i + 1 +" play";
+            sub.innerHTML = subs_all[0][i][0];
+            //setSubForPlayer(sub,player);
+            player.on('timeupdate', function (e) {
+                if (player.currentTime() >= times[i][1]/1000) {
+                    subedit.innerHTML = i + 1 +" played";
+                    player.pause();
+                }
+            });
+            player.play();
+        }
+        /*function setSubForPlayer(sub,player) {
+            sub.style.left = pxToNum(player.style.left) + Math.floor((player.width - sub.width) / 2) + "px";
+            sub.style.top = pxToNum(player.style.top) + player.height - 250 + "px";
+        }
+        function pxToNum(str) {
+            return parseInt(str.substring(0, str.length - 2));
+        }*/
+    </script>
+        <!--div id="subedit2">
+            <form action=".." method="post"> { % csrf_token %}
+                { % for subs in subs_all %}
+                    { % for sub in subs %}
+                        <input type="text" name="sub{ { sub.sid }}" value="{ { sub.content }}">
+                    { % endfor %}
                     <br>
-                {% endfor %}
+                { % endfor %}
                 <input type="submit" value="Save Changes">
             </form>
-        </div>
-    {% else %}
-    <form action="../index">
+        </div-->
+        <div margin="100px" margin-left="200px">
+        <form action="../index">
             <input type="submit" value="Back">
-    </form>
-    <form action="edit/">
-            <input type="submit" value="Edit Subtitles">
-    </form>
-    {% endif %}
-<!--
-	<div id="video-controls" class="controls" data-state="hidden">
-		<button id="playpause" type="button" data-state="play">Play/Pause</button>
-		<button id="stop" type="button" data-state="stop">Stop</button>
-		<div class="progress">
-			<progress id="progress" value="0" min="0">
-				<span id="progress-bar"></span>
-			</progress>
-		</div>
-		<button id="mute" type="button" data-state="mute">Mute/Unmute</button>
-		<button id="volinc" type="button" data-state="volup">Vol+</button>
-		<button id="voldec" type="button" data-state="voldown">Vol-</button>
-		<button id="fs" type="button" data-state="go-fullscreen">Fullscreen</button>
-		<button id="subtitles" type="button" data-state="subtitles">CC</button>
-	</div> -->
+            <button formaction="edit/">Edit Subtitles</button>
+        </form>
+        <button onclick="rate()">Rate</button>
+        <button onclick="replay()">Replay</button>
+        <button onclick="toNext()">Next</button>
+        </div>
+
 </body>
 </html>
