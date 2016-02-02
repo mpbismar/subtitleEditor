@@ -182,6 +182,10 @@ def correction(request, user_id):
     return render(request, 'correction.html',context)
 
 def statistics(request, user_id):
+    users_rate = User.objects.exclude(n_rate = 0).order_by('-n_rate')[:10]
+    users_corr = User.objects.exclude(n_cor = 0).order_by('-n_cor')[:10]
     context = {
+        'users_rate': users_rate,
+        'users_corr': users_corr
     }
     return render(request, 'statistic.html',context)
