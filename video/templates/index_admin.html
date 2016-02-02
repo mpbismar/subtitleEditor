@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>SubHPI: Videos</title>
+        <style type="text/css">
+            #list {
+                width: 400px;
+                height: auto;
+                margin: auto;
+                padding: 30px;
+                padding-left: 90px;
+                background-color: #FFFFDD;
+                border-radius: 50px;
+                margin-top: 330px;
+            }
+            #headline {
+                text-underline: single;
+            }
+            #curru {
+                margin-left: 170px;
+            }
+        </style>
+    </head>
+    <body>
+    <div id="list">
+        <h2 id="headline">Videos</h2>
+        {% if latest_video_list %}
+            <ul>
+                {% for video in latest_video_list %}
+                    <li><a href="{{ video.vid }}/">{{ video.name }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No videos are available.</p>
+        {% endif %}
+        <form id="form" action="/1/correction/" method="post">{% csrf_token %}
+            <button id="correction">Go to correction table</button>
+        </form>
+        <form id="form" action="/1/statistics/" method="post">{% csrf_token %}
+            <button id="statistics">Statistics</button>
+        </form>
+        <br>
+        <p id="curru">Current User: {{ user.name }} (<a href="../..">Logout</a>)</p>
+    </div>
+    </body>
+</html>
