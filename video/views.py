@@ -136,7 +136,7 @@ def login(request):
         return render(request, 'login.html', {'message': ''})
 
 
-def correction(request):
+def correction(request, user_id):
     changed = []
     correction_list = Correction.objects.filter(verified=False).order_by('uids')
     initial_sequence = []
@@ -166,7 +166,7 @@ def correction(request):
             corr.verified = True
             corr.save()
 
-        return redirect('/correction')
+        return redirect('/1/correction')
 
     template = loader.get_template('correction.html')
     context = {
@@ -176,3 +176,6 @@ def correction(request):
         'screator': screator,
     }
     return HttpResponse(template.render(context, request))
+
+def statistics(request, user_id):
+    return HttpResponse("Statistics")

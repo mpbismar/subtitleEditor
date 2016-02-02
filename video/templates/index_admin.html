@@ -34,8 +34,11 @@
         {% else %}
             <p>No videos are available.</p>
         {% endif %}
-        <form id="form" action="/correction/" method="post">{% csrf_token %}
-            <button id="corr">Go to correction table</button>
+        <form id="form" action="/1/correction/" method="post">{% csrf_token %}
+            <button id="correction">Go to correction table</button>
+        </form>
+        <form id="form" action="/1/statistics/" method="post">{% csrf_token %}
+            <button id="statistics">Statistics</button>
         </form>
         <br>
         <p id="curru">Current User: {{ user.name }} (<a href="../..">Logout</a>)</p>
