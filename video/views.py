@@ -180,7 +180,7 @@ def correction(request, user_id):
         'initial_sequence': initial_sequence,
         'screator': screator,
     }
-    return HttpResponse(template.render(context, request))
+    return render(request, 'correction.html',context)
 
 def statistics(request, user_id):
     return HttpResponse("Statistics")
