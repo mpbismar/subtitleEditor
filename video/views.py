@@ -173,7 +173,6 @@ def correction(request, user_id):
 
         return redirect('/1/correction')
 
-    template = loader.get_template('correction.html')
     context = {
         'correction_list': correction_list,
         'changed': changed,
@@ -183,4 +182,6 @@ def correction(request, user_id):
     return render(request, 'correction.html',context)
 
 def statistics(request, user_id):
-    return HttpResponse("Statistics")
+    context = {
+    }
+    return render(request, 'statistic.html',context)

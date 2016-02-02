@@ -10,7 +10,7 @@ class Video(models.Model):
 class User(models.Model):
     uid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=40)
-    n_apr = models.PositiveIntegerField(default=0)
+    n_rate = models.PositiveIntegerField(default=0)
     n_cor = models.PositiveIntegerField(default=0)
     password  = models.CharField(max_length=40)
 
