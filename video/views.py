@@ -115,9 +115,20 @@ def login(request):
 
 
 def correction(request):
+    changed = []
     correction_list = Correction.objects.order_by('uids')
+    i = 0
+    if request.method == 'POST':
+        seq = ''
+        for c in correction_list:
+            seq = str(c.cid)
+            if request.POST.get(seq) != None:
+                changed.append(request.POST.get(seq))
+       # return HttpResponse("Clicks %s" % changed)
+
     template = loader.get_template('correction.html')
     context ={
         'correction_list': correction_list,
+        'changed': changed,
     }
     return HttpResponse(template.render(context, request))

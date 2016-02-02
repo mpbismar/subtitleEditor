@@ -1,36 +1,24 @@
 <!DOCTYPE html>
 <html>
 <body>
+{% if changed %}
+    <li>The chosen sequences have been verified</li>
+    {% for change in changed %}
+        <li>{{ change }}</li>
+    {% endfor %}
+{% endif %}
 {% if correction_list %}
     <ul>
     {% for correction in correction_list %}
         <li>{{ correction.new_content }}</li>
     {% endfor %}
     </ul>
-    <h1>tabellarische ansicht</h1>
-    <table>
+    <form action="" method="post">{% csrf_token %}
         {% for correction in correction_list %}
-        <tr>
-            <th>{{ correction.new_content }}</th>
-            <th><button onclick="myFunction{{ correction.cid }}()" type="button" id="verify{{ correction.sid }}">Verify</button>
-                <script type="text/javascript">
-                    function myFunction{{ correction.cid }}() {
-                            document.getElementById("verified{{ correction.cid }}").innerHTML = "The version is verified"
-                    }
-                </script>
-            </th>
-            <th>
-                <p id="verified{{ correction.cid }}"></p>
-                <p>{{ correction.cid}}</p>
-            </th>
-        </tr>
+            <input type="checkbox" name="{{ correction.cid }}" value="{{ correction.cid }}">{{ correction.new_content }}<br>
         {% endfor %}
-        <tr>
-            <th>
-                <p id="verified"></p>
-            </th>
-        </tr>
-    </table>
+        <input type="submit" value="Verify!">
+    </form>
 {% else %}
     <p>No corrections available.</p>
 {% endif %}
