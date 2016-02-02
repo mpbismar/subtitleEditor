@@ -1,0 +1,105 @@
+input[type=checkbox] {
+    visibility: hidden;
+}
+.checkboxStyle {
+    width: 25px;
+    margin: 20px 100px;
+    position: relative;
+}
+
+.checkboxStyle label {
+    cursor: pointer;
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 0;
+    left: 0;
+    background: #eee;
+    border:1px solid #404040;
+}
+.checkboxStyle label:after {
+    opacity: 0;
+    content: '';
+    position: absolute;
+    width: 9px;
+    height: 5px;
+    background: transparent;
+    top: 6px;
+    left: 7px;
+    border: 3px solid #333;
+    border-top: none;
+    border-right: none;
+
+    transform: rotate(-45deg);
+}
+.checkboxStyle label:hover::after {
+    opacity: 0.3;
+}
+
+.checkboxStyle input[type=checkbox]:checked + label:after {
+    opacity: 1;
+}
+
+/*table {
+    width:100%;
+}*/
+table {
+    border: none;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+    border-radius:6px;
+    -moz-border-radius:6px;
+    padding: 5px;
+    text-align: left;
+    margin: 5px;
+}
+th{
+    text-align: center;
+}
+table tr:first-child th {
+  border-top: 0;
+}
+table tr:last-child td {
+  border-bottom: 0;
+}
+table tr td:first-child,
+table tr th:first-child {
+  border-left: 0;
+}
+table tr td:last-child,
+table tr th:last-child {
+  border-right: 0;
+}
+
+table tr:nth-child(even) {
+    background-color: #e6e6e6;
+}
+table tr:nth-child(odd) {
+   background-color:#fff;
+}
+table th	{
+    background-color: #0098cc;
+    color: white;
+}
+
+input[type=submit] {
+    background-color: #0098cc;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #007299;
+}
+/*
+h1 { color: #CEF0D4; font-family: 'Rouge Script', cursive; font-size: 130px; font-weight: normal; line-height: 48px; margin: 0 0 50px; text-align: center; text-shadow: 1px 1px 2px #082b34; }
+h2 { color: #a7e8f8; font-family: 'Julius Sans One', sans-serif; font-size: 22px; font-weight: bold; line-height: 32px; margin: 0 0 24px; text-shadow: 1px 1px 1px #082b34; }
+p { color: #FFFFFF; font-family: 'Carme', sans-serif; font-size: 16px; line-height: 24px; margin: 0 0 24px; }
+*/

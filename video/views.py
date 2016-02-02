@@ -117,6 +117,14 @@ def login(request):
 def correction(request):
     changed = []
     correction_list = Correction.objects.filter(verified=False).order_by('uids')
+    initial_sequence = []
+    screator = []
+    for c in correction_list:
+        initial_sequence.append(Sequence.objects.get(sid=c.sid_id))
+        users = c.uids.split(',')
+        c.uids = int(users[0])
+        screator.append(User.objects.get(uid=c.uids))
+
     if request.method == 'POST':
         seq = ''
         for c in correction_list:
@@ -139,5 +147,7 @@ def correction(request):
     context ={
         'correction_list': correction_list,
         'changed': changed,
+        'initial_sequence': initial_sequence,
+        'screator': screator,
     }
     return HttpResponse(template.render(context, request))
