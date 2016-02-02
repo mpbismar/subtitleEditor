@@ -17,7 +17,12 @@
         {% for correction in correction_list %}
             <input type="checkbox" name="{{ correction.cid }}" value="{{ correction.cid }}">{{ correction.new_content }}<br>
         {% endfor %}
-        <input type="submit" value="Verify!">
+        <input onclick = "alertfunc()" type="submit" value="Verify!">
+    <script>
+        function alertfunc(){
+            alert('Chosen Sequences have been verified.');
+        }
+    </script>
     </form>
 {% else %}
     <p>No corrections available.</p>

@@ -32,3 +32,4 @@ class Correction(models.Model):
     uids = models.CharField(max_length=500)
     new_content = models.CharField(max_length=150)
     pub_date = models.DateTimeField(auto_now_add=True)
+    verified = models.BooleanField(default=False)

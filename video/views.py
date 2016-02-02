@@ -4,7 +4,7 @@ import os
 from django.template import loader
 
 def index(request, user_id):
-    latest_video_list = Video.objects.order_by('-pub_date')[:5]
+    latest_video_list = Video.objects.order_by('name')[:5]
     context = {'latest_video_list': latest_video_list,
                'user_id':user_id}
     return render(request, 'index.html', context)
@@ -116,8 +116,7 @@ def login(request):
 
 def correction(request):
     changed = []
-    correction_list = Correction.objects.order_by('uids')
-    i = 0
+    correction_list = Correction.objects.filter(verified=False).order_by('uids')
     if request.method == 'POST':
         seq = ''
         for c in correction_list:
@@ -127,9 +126,14 @@ def correction(request):
 
         for s in changed:
             corr = Correction.objects.get(cid=s)
-            rootSeq = Sequence.objects.get(sid=corr.sid_id)
-            sequence = Sequence(vid=corr.vid,lang=rootSeq.lang,content=corr.new_content,start=rootSeq.start,end=rootSeq.end,creator_id=corr.uids[0],rating=0)
+            rootseq = Sequence.objects.get(sid=corr.sid_id)
+            creator = corr.uids.split(',')
+            sequence = Sequence(vid=corr.vid,lang=rootseq.lang,content=corr.new_content,start=rootseq.start,end=rootseq.end,creator_id=creator[0],rating=0)
             sequence.save()
+            corr.verified=True
+            corr.save()
+
+        return redirect('/correction')
 
     template = loader.get_template('correction.html')
     context ={
