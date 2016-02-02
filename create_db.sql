@@ -2,7 +2,6 @@
 /*DELETE USER IF EXISTS `django`;
 CREATE USER `django`@`localhost` IDENTIFIED BY `password`;
 DROP DATABASE IF EXISTS `sub_db`;*/
-CREATE USER 'django'@'localhost' IDENTIFIED BY 'password';
 
 CREATE DATABASE `sub_db`
     DEFAULT CHARACTER SET utf8

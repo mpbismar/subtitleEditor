@@ -10,10 +10,10 @@
         #subedit {position: absolute;
             height: auto; width: auto;
             left: 1100px; top: 250px;}
-        #video {margin:100px;}
+        #video {margin:60px;}
         #sub0 {position: absolute;
             z-index: -1;
-            height: auto; width: auto;
+            height: 20px; width: auto;
             left: 440px; top: 780px;
             opacity: 0.6; color:#100000;
             background-color:#BFCCB0}
@@ -21,7 +21,7 @@
             background-color:#AAF090}
         #sub1 {position: absolute;
             z-index: -1;
-            height: auto; width: auto;
+            height: 20px; width: auto;
             left: 440px; top: 810px;
             opacity: 0.6; color:#100000;
             background-color:#BFCCB0}
@@ -29,7 +29,7 @@
             background-color:#AAF090}
         #sub2 {position: absolute;
             z-index: -1;
-            height: auto; width: auto;
+            height: 20px; width: auto;
             left: 440px; top: 840px;
             opacity: 0.6; color:#100000;
             background-color:#BFCCB0}
@@ -37,7 +37,7 @@
             background-color:#AAF090}
         #sub3 {position: absolute;
             z-index: -1;
-            height: auto; width: auto;
+            height: 20px; width: auto;
             left: 440px; top: 870px;
             opacity: 0.6; color:#100000;
             background-color:#BFCCB0}
@@ -45,12 +45,16 @@
             background-color:#AAF090}
         #sub4 {position: absolute;
             z-index: -1;
-            height: auto; width: auto;
+            height: 20px; width: auto;
             left: 440px; top: 900px;
             opacity: 0.6; color:#100000;
             background-color:#BFCCB0}
         #sub4:hover {opacity:1.0;
             background-color:#AAF090}
+        #subeditform {
+            position: absolute;
+            height: 20px; width: 200px;
+            left: 640px; top: 780px;}
     </style>
 </head>
 <body>
@@ -69,9 +73,11 @@
     <div id="sub4">
         sub4
     </div>
-    <textarea id="subedit">
-    This could be any sub!
-    </textarea>
+    <form id="subeditform" action="" method="post"> {% csrf_token %}
+        <input id="in1" type="text" visibility="hidden" name="subedit" value="">
+        <input id="in2" visibility="hidden" type="submit" value=">">
+        <input id="start" visibility="hidden" type="text" name="start" value="0">
+    </form>
 	<h1 margin="100px">{{ idvideo.name }}</h1>
     <video id="video" class="video-js" controls preload="auto" width="900" height="600" data-setup="{}">
         <source src="/static/video/{{ idvideo.name }}.mp4" type="video/mp4">
@@ -93,7 +99,9 @@
             document.getElementById('sub2'),
             document.getElementById('sub3'),
             document.getElementById('sub4')];
-        var subedit = document.getElementById('subedit');
+        var subedit = document.getElementById('subeditform');
+        var in1 = document.getElementById('in1');
+        var in2 = document.getElementById('in2');
         var nseq = {{ nseq }};
         var times = [{% for time in times %} [{{ time.start }}, {{ time.end }}], {% endfor %}0];
         var subs_all = [{%for subs_lang in subs_all%}[{%for subs in subs_lang%}[{%for sub in subs%}"{{ sub.content }}",{% endfor %}0],{% endfor %}0],{% endfor %}0]
@@ -101,6 +109,7 @@
         function rate() {
             player.currentTime(0);
             i = 0;
+            document.getElementById('start').value=times[i][0];
             play()
         }
         function replay() {
@@ -109,10 +118,13 @@
         }
         function toNext() {
             i = i + 1;
+            document.getElementById('start').value=times[i][0];
+            player.currentTime(times[i][0]/1000);
             play()
         }
         function play() {
-            subedit.innerHTML = i + 1 +" play";
+            in1.style.visibility="visible"
+            in2.style.visibility="visible"
             for(k = 0; k < subs_all[0][i].length-1; k++) {
                 subs[k].innerHTML = subs_all[0][i][k];
                 subs[k].style.visibility = "visible";
@@ -123,7 +135,6 @@
             //setSubForPlayer(sub,player);
             player.on('timeupdate', function (e) {
                 if (player.currentTime() >= times[i][1]/1000) {
-                    subedit.innerHTML = i + 1 +" played";
                     player.pause();
                 }
             });
@@ -137,21 +148,9 @@
             return parseInt(str.substring(0, str.length - 2));
         }*/
     </script>
-        <!--div id="subedit2">
-            <form action=".." method="post"> { % csrf_token %}
-                { % for subs in subs_all %}
-                    { % for sub in subs %}
-                        <input type="text" name="sub{ { sub.sid }}" value="{ { sub.content }}">
-                    { % endfor %}
-                    <br>
-                { % endfor %}
-                <input type="submit" value="Save Changes">
-            </form>
-        </div-->
         <div margin="100px" margin-left="200px">
         <form action="../index">
             <input type="submit" value="Back">
-            <button formaction="edit/">Edit Subtitles</button>
         </form>
         <button onclick="rate()">Rate</button>
         <button onclick="replay()">Replay</button>
