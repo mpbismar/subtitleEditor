@@ -122,9 +122,14 @@ def correction(request):
         seq = ''
         for c in correction_list:
             seq = str(c.cid)
-            if request.POST.get(seq) != None:
+            if request.POST.get(seq) is not None:
                 changed.append(request.POST.get(seq))
-       # return HttpResponse("Clicks %s" % changed)
+
+        for s in changed:
+            corr = Correction.objects.get(cid=s)
+            rootSeq = Sequence.objects.get(sid=corr.sid_id)
+            sequence = Sequence(vid=corr.vid,lang=rootSeq.lang,content=corr.new_content,start=rootSeq.start,end=rootSeq.end,creator_id=corr.uids[0],rating=0)
+            sequence.save()
 
     template = loader.get_template('correction.html')
     context ={
