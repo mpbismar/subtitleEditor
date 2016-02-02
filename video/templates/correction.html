@@ -13,12 +13,12 @@
 {% endif %}
 {% if correction_list %}
     <form action="" method="post">{% csrf_token %}
-    <table>
+    <table class="center">
      <tr>
-         <th><h2>User that created this</h2></th>
-         <th><h2>Original-Sequence</h2></th>
-         <th><h2>Subtitle-Sequence</h2></th>
-         <th><h2>Check to verify</h2></th>
+         <th style="width: 20%"><h2>Creator</h2></th>
+         <th style="width: 35%"><h2>Original-Sequence</h2></th>
+         <th style="width: 35%"><h2>Subtitle-Sequence</h2></th>
+         <th style="width: 5%"><h2>Check to verify</h2></th>
      </tr>
         {% for correction in correction_list %}
             <tr>
@@ -38,7 +38,7 @@
                     {% endfor %}
                 </td>
                 <td>
-                     <p>{{ correction.new_content }}, {{ correction.uids }}</p>
+                     <p>{{ correction.new_content }}</p>
                 </td>
                 <td>
                     <div class="checkboxStyle">
@@ -49,8 +49,13 @@
             </section>
             </tr>
         {% endfor %}
+        <tr>
+            <td style="border-left: 0; border-right: 0; border-top: 0; background-color: white"></td>
+            <td style="border-left: 0; border-right: 0; border-top: 0; background-color: white;"></td>
+            <td style="border-left: 0; border-right: 0; border-top: 0; background-color: white;"></td>
+            <td style="border-left: 0; border-right: 0; border-top: 0; background-color: white; text-align: center;"><input onclick = "alertfunc()" type="submit" value="Verify!"></td>
+        </tr>
      </table>
-        <input onclick = "alertfunc()" type="submit" value="Verify!">
     <script>
         function alertfunc(){
             alert('Chosen Sequences have been verified.');

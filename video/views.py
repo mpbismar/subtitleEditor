@@ -142,10 +142,12 @@ def correction(request):
     initial_sequence = []
     screator = []
     for c in correction_list:
-        initial_sequence.append(Sequence.objects.get(sid=c.sid_id))
+        if Sequence.objects.get(sid=c.sid_id) not in initial_sequence:
+            initial_sequence.append(Sequence.objects.get(sid=c.sid_id))
         users = c.uids.split(',')
         c.uids = int(users[0])
-        screator.append(User.objects.get(uid=c.uids))
+        if User.objects.get(uid=c.uids) not in screator:
+            screator.append(User.objects.get(uid=c.uids))
 
     if request.method == 'POST':
         seq = ''
