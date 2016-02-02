@@ -11,24 +11,64 @@
             height: auto; width: auto;
             left: 1100px; top: 250px;}
         #video {margin:100px;}
-    {% for i in nversions %}
-        #sub{{ i }} {position: absolute;
+        #sub0 {position: absolute;
             z-index: -1;
             height: auto; width: auto;
-            left: 440px; top: {{ 780 + i|mul:100 }}px;
-            opacity: 0.6; color:#FFFFFF;
-            background-color:#000000}
-        #sub{{ i }}:hover {opacity:1.0;
-            background-color:#0AA00A}
-    {% endfor %}
+            left: 440px; top: 780px;
+            opacity: 0.6; color:#100000;
+            background-color:#BFCCB0}
+        #sub0:hover {opacity:1.0;
+            background-color:#AAF090}
+        #sub1 {position: absolute;
+            z-index: -1;
+            height: auto; width: auto;
+            left: 440px; top: 810px;
+            opacity: 0.6; color:#100000;
+            background-color:#BFCCB0}
+        #sub1:hover {opacity:1.0;
+            background-color:#AAF090}
+        #sub2 {position: absolute;
+            z-index: -1;
+            height: auto; width: auto;
+            left: 440px; top: 840px;
+            opacity: 0.6; color:#100000;
+            background-color:#BFCCB0}
+        #sub2:hover {opacity:1.0;
+            background-color:#AAF090}
+        #sub3 {position: absolute;
+            z-index: -1;
+            height: auto; width: auto;
+            left: 440px; top: 870px;
+            opacity: 0.6; color:#100000;
+            background-color:#BFCCB0}
+        #sub3:hover {opacity:1.0;
+            background-color:#AAF090}
+        #sub4 {position: absolute;
+            z-index: -1;
+            height: auto; width: auto;
+            left: 440px; top: 900px;
+            opacity: 0.6; color:#100000;
+            background-color:#BFCCB0}
+        #sub4:hover {opacity:1.0;
+            background-color:#AAF090}
     </style>
 </head>
 <body>
-    {% for i in nversions %}
-        <div id="sub{{ i }}">
-            sub{{ i }}
-        </div>
-    {% endfor %}
+    <div id="sub0">
+        sub0
+    </div>
+    <div id="sub1">
+        sub1
+    </div>
+    <div id="sub2">
+        sub2
+    </div>
+    <div id="sub3">
+        sub3
+    </div>
+    <div id="sub4">
+        sub4
+    </div>
     <textarea id="subedit">
     This could be any sub!
     </textarea>
@@ -48,7 +88,11 @@
     <!--script src="../js/player.js"></script-->
     <script>
         var player = videojs('video');
-        var sub = document.getElementById('sub');
+        var subs = [document.getElementById('sub0'),
+            document.getElementById('sub1'),
+            document.getElementById('sub2'),
+            document.getElementById('sub3'),
+            document.getElementById('sub4')];
         var subedit = document.getElementById('subedit');
         var nseq = {{ nseq }};
         var times = [{% for time in times %} [{{ time.start }}, {{ time.end }}], {% endfor %}0];
@@ -69,7 +113,13 @@
         }
         function play() {
             subedit.innerHTML = i + 1 +" play";
-            sub.innerHTML = subs_all[0][i][0];
+            for(k = 0; k < subs_all[0][i].length-1; k++) {
+                subs[k].innerHTML = subs_all[0][i][k];
+                subs[k].style.visibility = "visible";
+            }
+            for(k = subs_all[0][i].length-1; k < 5; k++) {
+                subs[k].style.visibility = "hidden";
+            }
             //setSubForPlayer(sub,player);
             player.on('timeupdate', function (e) {
                 if (player.currentTime() >= times[i][1]/1000) {
