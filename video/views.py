@@ -61,8 +61,10 @@ def video(request, user_id, video_id, edit):
             vttFile.write("WEBVTT\n\n")
             i = 0
             for time in times:
-                sub = Sequence.objects.filter(vid_id=video_id, lang=lang, start=time.start).order_by('rating').first()
-                corrs = Correction.objects.filter(vid_id=sub.vid_id, lang=lang, start=time.start)
+                refer_sub = Sequence.objects.filter(vid_id=video_id, lang=lang, start=time.get("start", 0))\
+                    .order_by('creator__uid').first()
+                sub = Sequence.objects.filter(vid_id=video_id, lang=lang, start=time.get("start", 0)).order_by('rating').first()
+                corrs = Correction.objects.filter(sid_id=refer_sub.sid)
                 if corrs:
                     for corr in corrs:
                         if corr.uids.split(',').__contains__(user_id):
