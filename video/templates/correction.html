@@ -1,10 +1,14 @@
+{% extends 'base.html' %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>SubHPI: Correction</title>
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'correctionstyle.css' %}" />
 </head>
 <body>
+{% block content %}
 {% if changed %}
     <li>The chosen sequences have been verified</li>
     {% for change in changed %}
@@ -65,5 +69,6 @@
 {% else %}
     <p>No corrections available.</p>
 {% endif %}
+{% endblock %}
 </body>
 </html>

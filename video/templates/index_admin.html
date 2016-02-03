@@ -1,39 +1,26 @@
+{% extends 'base.html' %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>SubHPI: Videos</title>
-        <style type="text/css">
-            #list {
-                width: 400px;
-                height: auto;
-                margin: auto;
-                padding: 30px;
-                padding-left: 90px;
-                background-color: #FFFFDD;
-                border-radius: 50px;
-                margin-top: 330px;
-            }
-            #headline {
-                text-underline: single;
-            }
-            #curru {
-                margin-left: 170px;
-            }
-        </style>
+        <title>SubHPI: VideosAdmin</title>
     </head>
     <body>
-    <div id="list">
-        <h2 id="headline">Videos</h2>
+    {% block content %}
+        <h2 style="padding-left: 200px" id="headline">Videos</h2>
         {% if latest_video_list %}
+            <div style="padding-left: 200px" class="list-group">
             <ul>
                 {% for video in latest_video_list %}
-                    <li><a href="{{ video.vid }}/">{{ video.name }}</a></li>
+                    <a style="width: 400px" href="{{ video.vid }}/" class="list-group-item">{{ video.name }}</a>
                 {% endfor %}
             </ul>
+            </div>
         {% else %}
             <p>No videos are available.</p>
         {% endif %}
+   {% endblock %}
+
         <form id="form" action="/1/correction/" method="post">{% csrf_token %}
             <button id="correction">Go to correction table</button>
         </form>
@@ -43,5 +30,16 @@
         <br>
         <p id="curru">Current User: {{ user.name }} (<a href="../..">Logout</a>)</p>
     </div>
+
+    {% block navbar_button %}
+           <div id="navbar" class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right">
+            <button style="margin-right: 10px" class="btn btn-info btn-primary" type="submit" formaction="/1/correction" formmethod="">Correction Table</button>
+            <button style="margin-right: 100px" class="btn btn-info btn-primary" type="submit" formaction="/1/statistics" formmethod="">Statistics</button>
+              <a style="color: white; font-size: 20px; margin-right: 10px;">{{ user.name }}</a>
+            <button class="btn btn-warning btn-primary" type="submit" formaction="../.." formmethod="">Logout</button>
+          </form>
+        </div><!--/.navbar-collapse -->
+    {% endblock %}
     </body>
 </html>

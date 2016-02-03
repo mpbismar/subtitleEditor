@@ -6,7 +6,8 @@ urlpatterns = [
 
     url(r'^(?P<video_id>[0-9]+)/(?P<edit>[a-z]*)/?$', views.video, name='video'),
     url(r'^index$', views.index, name='index'),
-    url(r'^correction/?$', views.correction, name='correction')
+    url(r'^correction/?$', views.correction, name='correction'),
+    url(r'^statistics/?$', views.statistics, name='statistics')
 
 ]
 

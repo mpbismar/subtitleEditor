@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SubHPI: Statistic</title>
+    <style>
+        table {
+            width: 40%;
+            border: none;
+            border-collapse: collapse;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+        }
+        td{
+            padding-left: 10px;
+            text-align: left;
+        }
+        th{
+            text-align: center;
+            height: 50px;
+        }
+        table tr:first-child th {
+          border-top: 0;
+            border-bottom: 2px solid black;
+        }
+        table tr:last-child td {
+          border-bottom: 0;
+        }
+        table tr td:first-child,
+        table tr th:first-child {
+          border-left: 0;
+        }
+        table tr td:last-child,
+        table tr th:last-child {
+          border-right: 0;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #e6e6e6;
+        }
+        table tr:nth-child(odd) {
+           background-color:#fff;
+        }
+        table th	{
+            background-color: #0098cc;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <table style="width: 100%";>
+        <tr>
+            <th><p style="text-align: left;">Top 10 Sequence ratings</p></th>
+            <th><p style="text-align: right;">Top 10 Sequence Creator</p></th>
+        </tr>
+    </table>
+
+    <table style="float:left";>
+        <tr>
+            <th>Place</th>
+            <th>User</th>
+            <th>Amount</th>
+        </tr>
+        {% for ur in users_rate %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ ur.name }}</td>
+                <td>{{ ur.n_rate }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <table style="float:right";>
+        <tr>
+            <th>Place</th>
+            <th>User</th>
+            <th>Amount</th>
+        </tr>
+        {% for uc in users_corr %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ uc.name }}</td>
+                <td>{{ uc.n_cor }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

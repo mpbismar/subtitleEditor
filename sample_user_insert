@@ -1,0 +1,13 @@
+use sub_db;
+insert into video_user (name, n_rate, n_cor, password) values ('John', 6, 3, '123');
+insert into video_user (name, n_rate, n_cor, password) values ('Jackie', 7, 12, '123');
+insert into video_user (name, n_rate, n_cor, password) values ('Jason', 3, 0, '123');
+insert into video_user (name, n_rate, n_cor, password) values ('Juan', 10, 5, '123');
+insert into video_user (name, n_rate, n_cor, password) values ('Tom', 16, 4, '123');
+insert into video_user (name, n_rate, n_cor, password) values ('Tom', 16, 4, '123');
+insert into video_user (name, n_rate, n_cor, password) values ('Julian', 8, 3, '123');
+insert into video_user (name, n_rate, n_cor, password) values ('Marcel', 7, 12, '123');
+insert into video_user (name, n_rate, n_cor, password) values ('Toni', 5, 0, '123');
+insert into video_user (name, n_rate, n_cor, password) values ('Soeren', 19, 5, '123');
+insert into video_user (name, n_rate, n_cor, password) values ('Benjamin', 1, 4, '123');
+insert into video_user (name, n_rate, n_cor, password) values ('Jordi', 16, 4, '123');

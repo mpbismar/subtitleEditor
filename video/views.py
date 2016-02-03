@@ -135,7 +135,6 @@ def login(request):
     if request.method == 'POST':
         uname = request.POST.get('username')
         pw = request.POST.get('password')
-
         if User.objects.filter(name=uname):
             user = User.objects.get(name=uname)
             if user.password == pw:
@@ -177,7 +176,6 @@ def correction(request, user_id):
 
         return redirect('/1/correction')
 
-    template = loader.get_template('correction.html')
     context = {
         'correction_list': correction_list,
         'changed': changed,
@@ -187,4 +185,10 @@ def correction(request, user_id):
     return render(request, 'correction.html',context)
 
 def statistics(request, user_id):
-    return HttpResponse("Statistics")
+    users_rate = User.objects.exclude(n_rate = 0).order_by('-n_rate')[:10]
+    users_corr = User.objects.exclude(n_cor = 0).order_by('-n_cor')[:10]
+    context = {
+        'users_rate': users_rate,
+        'users_corr': users_corr
+    }
+    return render(request, 'statistic.html',context)

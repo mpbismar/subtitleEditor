@@ -1,35 +1,38 @@
+{% extends 'base.html' %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <title>SubHPI: Register</title>
-        <style type="text/css">
-            #login.container {margin-left: auto;
-                margin-right: auto;
-            background-color: #EEEEEE;
-            vertical-align: middle;
-            width: 450px;
-                height: 200px;
-                border-radius: 50px;}
-            #form {margin-left:50px;
-            margin-top: 330px}
-            #reg {margin-left: 200px}
-            #userin {padding-left: 5px;
-            margin-left: 30px}
-            #passin {padding-left: 5px;
-            margin-left: 30px}
-            #m {margin-left: 6px;
-            color: #FF0000}
-        </style>
     </head>
     <body>
-    <div id="login" class="container">
+  <!--  <div id="login" class="container">
         <form id="form" action="" method="post">{% csrf_token %}<br><br>
             Username:<input id="userin" type="text" name="username"><br><br>
             Password:<input id="passin" type="password" name="password"><br><br>
             <input type="submit" value="Sign up"><button id="reg" formaction="../login/" formmethod="">Back</button>
         </form>
         <p id="m">{{ message }}</p>
-    </div>
+    </div>-->
+    {% block content %}
+      <form class="form-signin" method="post">{% csrf_token %}
+        <h2 class="form-signin-heading">Please register</h2>
+        <label for="inputUser" class="sr-only">Username</label>
+        <input type="text" id="userin" name="username" class="form-control" placeholder="Username" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="passin" name="password" class="form-control" placeholder="Password" required>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Register and sign in</button>
+      </form>
+        <p id="m" style="text-align: center; color: red">{{ message }}</p>
+    {% endblock %}
+
+    {% block navbar_button %}
+          <div id="navbar" class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right">
+            <button class="btn btn-success btn-primary btn-block" type="submit" formaction="/login/" formmethod="">Sign in</button>
+          </form>
+        </div><!--/.navbar-collapse -->
+     {% endblock %}
+    </body>
     </body>
 </html>
