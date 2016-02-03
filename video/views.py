@@ -52,14 +52,17 @@ def video(request, user_id, video_id, edit):
         path = "video/static/subtitles/vtt/"
         if not os.path.exists(path):
             os.makedirs(path)
+        times = Sequence.objects.filter(vid_id=video_id, lang=idvideo.sub_langs.split(',')[0])\
+            .order_by('start').values('start','end').distinct()
         for lang in idvideo.sub_langs.split(","):
             subs = Sequence.objects.filter(vid_id=video_id, lang=lang)
             vttFile = open(os.path.join(path, idvideo.name + "_" + lang + ".vtt"), "w")
             vttFile.truncate()
             vttFile.write("WEBVTT\n\n")
             i = 0
-            for sub in subs:
-                corrs = Correction.objects.filter(sid=sub.sid)
+            for time in times:
+                sub = Sequence.objects.filter(vid_id=video_id, lang=lang, start=time.start).order_by('rating').first()
+                corrs = Correction.objects.filter(vid_id=sub.vid_id, lang=lang, start=time.start)
                 if corrs:
                     for corr in corrs:
                         if corr.uids.split(',').__contains__(user_id):
@@ -96,9 +99,6 @@ def video(request, user_id, video_id, edit):
                 versions.append(seq)
             subs.append(versions)
             subs_all.append(subs)
-
-        times = Sequence.objects.filter(vid_id=video_id, lang=idvideo.sub_langs.split(',')[0])\
-            .order_by('start').values('start','end').distinct()
 
         context = {'idvideo': idvideo,
                    'subs_all': subs_all,
