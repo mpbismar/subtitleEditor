@@ -21,10 +21,10 @@ input[type=checkbox] {
     opacity: 0;
     content: '';
     position: absolute;
-    width: 9px;
-    height: 5px;
+    width: 18px;
+    height: 10px;
     background: transparent;
-    top: 6px;
+    top: 4px;
     left: 7px;
     border: 3px solid #333;
     border-top: none;
@@ -85,12 +85,12 @@ table tr:nth-child(odd) {
    background-color:#fff;
 }
 table th	{
-    background-color: #0098cc;
+    background-color: #337ab7;
     color: white;
 }
 
 input[type=submit] {
-    background-color: #0098cc;
+    background-color: #337ab7;
     color: white;
     padding: 14px 20px;
     margin: 8px 0;
@@ -105,7 +105,7 @@ input[value="Verify!"]{
 }
 
 input[type=submit]:hover {
-    background-color: #007299;
+    background-color: #2e568e;
 }
 
 

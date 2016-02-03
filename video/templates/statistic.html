@@ -1,3 +1,4 @@
+{% extends 'base.html' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,7 @@
     <title>SubHPI: Statistic</title>
     <style>
         table {
-            width: 40%;
+            width: 100%;
             border: none;
             border-collapse: collapse;
             margin-right: auto;
@@ -52,14 +53,15 @@
     </style>
 </head>
 <body>
-    <table style="width: 100%";>
+    {% block content %}
+    <table style="width: 100%; background-color: #eeeeee; border: 0">
         <tr>
-            <th><p style="text-align: left;">Top 10 Sequence ratings</p></th>
-            <th><p style="text-align: right;">Top 10 Sequence Creator</p></th>
+            <th style=" background-color: #eeeeee; border: 0"><h2 style="text-align: left; color: black">Top 10 Sequence ratings</h2></th>
+            <th style=" background-color: #eeeeee; border: 0"><h2 style="text-align: left; color: black">Top 10 Sequence Creator</h2></th>
         </tr>
     </table>
 
-    <table style="float:left";>
+    <table class="table table-striped" style="float:left; width:45%">
         <tr>
             <th>Place</th>
             <th>User</th>
@@ -73,7 +75,7 @@
             </tr>
         {% endfor %}
     </table>
-    <table style="float:right";>
+    <table class="table table-striped" style="float:right; width:45%">
         <tr>
             <th>Place</th>
             <th>User</th>
@@ -87,5 +89,16 @@
             </tr>
         {% endfor %}
     </table>
+    {% endblock %}
+
+{% block navbar_button %}
+           <div id="navbar" class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right">
+              <button style="background-color: lightgrey; color: black;  margin-right: 10px" class="btn btn-default btn-primary" type="submit" formaction="/1/index" formmethod="">Back</button>
+              <a style="color: white; font-size: 20px; padding-right: 10px;">{{ user.name }}</a>
+            <button class="btn btn-warning btn-primary" type="submit" formaction="../.." formmethod="">Logout</button>
+          </form>
+        </div><!--/.navbar-collapse -->
+    {% endblock %}
 </body>
 </html>
