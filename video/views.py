@@ -39,6 +39,8 @@ def video(request, user_id, video_id, edit):
                         else:
                             if uids.__contains__(user_id):
                                 uids.remove(user_id)
+                                if not uids:
+                                    corr.delete() #doesn't work somehow
                                 corr.uids=','.join(uids)
                                 corr.save()
                     if not corr_exists:
@@ -95,7 +97,9 @@ def video(request, user_id, video_id, edit):
             subs.append(versions)
             subs_all.append(subs)
 
-        times = Sequence.objects.filter(vid_id=video_id, lang=idvideo.sub_langs.split(',')[0]).order_by('start')
+        times = Sequence.objects.filter(vid_id=video_id, lang=idvideo.sub_langs.split(',')[0])\
+            .order_by('start').values('start','end').distinct()
+
         context = {'idvideo': idvideo,
                    'subs_all': subs_all,
                    'sub_langs': idvideo.sub_langs.split(","),
