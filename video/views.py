@@ -131,7 +131,6 @@ def login(request):
     if request.method == 'POST':
         uname = request.POST.get('username')
         pw = request.POST.get('password')
-
         if User.objects.filter(name=uname):
             user = User.objects.get(name=uname)
             if user.password == pw:

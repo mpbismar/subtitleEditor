@@ -1,3 +1,4 @@
+{% extends 'base.html' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'correctionstyle.css' %}" />
 </head>
 <body>
+{% block content %}
 {% if changed %}
     <li>The chosen sequences have been verified</li>
     {% for change in changed %}
@@ -67,5 +69,6 @@
 {% else %}
     <p>No corrections available.</p>
 {% endif %}
+{% endblock %}
 </body>
 </html>
