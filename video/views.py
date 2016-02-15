@@ -16,44 +16,61 @@ def index(request, user_id):
 
 def video(request, user_id, video_id, edit):
     if Video.objects.filter(vid=video_id):
-        if request.method == 'POST':
-            new_con = request.POST.get('subedit')
-            start = request.POST.get('start')
-            exists = False
-            refer_seq = Sequence.objects.filter(vid_id=video_id,start=start).order_by('creator__uid').first()
-            for seq in Sequence.objects.filter(vid_id=video_id,start=start):
-                if seq.content == new_con:
-                    exists = True
-            if not exists:
-                corrs = Correction.objects.filter(vid_id=video_id,sid_id=refer_seq.sid)
-                if corrs:
-                    corr_exists = False
-                    for corr in corrs:
-                        uids = corr.uids.split(',')
-                        if corr.new_content==new_con:
-                            if not uids.__contains__(user_id):
-                                uids.append(user_id)
-                                corr.uids=','.join(uids)
-                                corr.save()
-                            corr_exists = True
-                        else:
-                            if uids.__contains__(user_id):
-                                uids.remove(user_id)
-                                if not uids:
-                                    corr.delete() #doesn't work somehow
-                                corr.uids=','.join(uids)
-                                corr.save()
-                    if not corr_exists:
-                        Correction(sid_id=refer_seq.sid,vid_id=video_id,uids=user_id,new_content=new_con).save()
-                else:
-                    Correction(sid_id=refer_seq.sid,vid_id=video_id,uids=user_id,new_content=new_con).save()
-
         idvideo = Video.objects.get(vid=video_id)
+        times = Sequence.objects.filter(vid_id=video_id, lang=idvideo.sub_langs.split(',')[0])\
+            .order_by('start').values('start','end').distinct()
+        if request.method == 'POST':
+            if request.POST.get('subedit'):
+                new_con = request.POST.get('subedit')
+                start = request.POST.get('start')
+                exists = False
+                refer_seq = Sequence.objects.filter(vid_id=video_id,start=start).order_by('creator__uid').first()
+                for seq in Sequence.objects.filter(vid_id=video_id,start=start):
+                    if seq.content == new_con:
+                        exists = True
+                if not exists:
+                    corrs = Correction.objects.filter(vid_id=video_id,sid_id=refer_seq.sid)
+                    if corrs:
+                        corr_exists = False
+                        for corr in corrs:
+                            uids = corr.uids.split(',')
+                            if corr.new_content==new_con:
+                                if not uids.__contains__(user_id):
+                                    uids.append(user_id)
+                                    corr.uids=','.join(uids)
+                                    corr.save()
+                                corr_exists = True
+                            else:
+                                if uids.__contains__(user_id):
+                                    uids.remove(user_id)
+                                    if not uids:
+                                        corr.delete() #doesn't work somehow
+                                    corr.uids=','.join(uids)
+                                    corr.save()
+                        if not corr_exists:
+                            Correction(sid_id=refer_seq.sid,vid_id=video_id,uids=user_id,new_content=new_con).save()
+                    else:
+                        Correction(sid_id=refer_seq.sid,vid_id=video_id,uids=user_id,new_content=new_con).save()
+            else:
+                lang_id = request.POST.get('lang')
+                lang = idvideo.sub_langs.split(',')[int(lang_id)]
+                seqs = Sequence.objects.filter(vid_id=video_id, lang=lang).order_by('start')
+                sub_id = 0
+                version_id = 0
+                start = seqs[0].start
+                for seq in seqs:
+                    if seq.start != start:
+                        sub_id+=1
+                        start = seq.start
+                        version_id = 0
+                    if version_id == int(request.POST.get('r'+str(sub_id))):
+                        seq.rating += 1
+                        seq.save(force_update=True)
+                    version_id += 1
+
         path = "video/static/subtitles/vtt/"
         if not os.path.exists(path):
             os.makedirs(path)
-        times = Sequence.objects.filter(vid_id=video_id, lang=idvideo.sub_langs.split(',')[0])\
-            .order_by('start').values('start','end').distinct()
         for lang in idvideo.sub_langs.split(","):
             subs = Sequence.objects.filter(vid_id=video_id, lang=lang)
             vttFile = open(os.path.join(path, idvideo.name + "_" + lang + ".vtt"), "w")
@@ -63,7 +80,7 @@ def video(request, user_id, video_id, edit):
             for time in times:
                 refer_sub = Sequence.objects.filter(vid_id=video_id, lang=lang, start=time.get("start", 0))\
                     .order_by('creator__uid').first()
-                sub = Sequence.objects.filter(vid_id=video_id, lang=lang, start=time.get("start", 0)).order_by('rating').first()
+                sub = Sequence.objects.filter(vid_id=video_id, lang=lang, start=time.get("start", 0)).order_by('rating').last()
                 corrs = Correction.objects.filter(sid_id=refer_sub.sid)
                 if corrs:
                     for corr in corrs:
@@ -107,7 +124,8 @@ def video(request, user_id, video_id, edit):
                    'sub_langs': idvideo.sub_langs.split(","),
                    'edit': edit == "edit",
                    'times': times,
-                   'nseq': times.__len__()}
+                   'nseq': times.__len__(),
+                   'maxseq': range(max_versions)}
         return render(request, 'video.html', context)
     else:
         return redirect('/' + str(user_id) + '/index')
