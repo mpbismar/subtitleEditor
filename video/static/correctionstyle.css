@@ -104,6 +104,10 @@ input[value="Verify!"]{
    font-size: 20px;
 }
 
+input[value="Reject!"]{
+   font-size: 20px;
+}
+
 input[type=submit]:hover {
     background-color: #2e568e;
 }

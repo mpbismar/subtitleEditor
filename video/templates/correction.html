@@ -25,7 +25,7 @@
                   <th style="width: 20%"><h2>Creator</h2></th>
                   <th style="width: 35%"><h2>Original-Sequence</h2></th>
                   <th style="width: 35%"><h2>Subtitle-Sequence</h2></th>
-                  <th style="width: 5%"><h2>Check to verify</h2></th>
+                  <th style="width: 10%"></th>
                 </tr>
               </thead>
             <tbody>
@@ -62,14 +62,17 @@
                 <td style="border-left: 0; border-right: 0; border-top: 0; background-color: #eeeeee"></td>
                 <td style="border-left: 0; border-right: 0; border-top: 0; background-color: #eeeeee;"></td>
                 <td style="border-left: 0; border-right: 0; border-top: 0; background-color: #eeeeee;"></td>
-                <td style="border-left: 0; border-right: 0; border-top: 0; background-color: #eeeeee; text-align: center;"><input onclick = "alertfunc()" type="submit" value="Verify!"></td>
+                <td style="border-left: 0; border-right: 0; border-top: 0; background-color: #eeeeee; text-align: center;"><input style = "float: left" onclick = "verify()" type="submit" name="verify" value="Verify!"><input style = "float: right" onclick = "reject()" type="submit" value="Reject!"></td>
             </tr>
             </tbody>
             </table>
           </div>
     <script>
-        function alertfunc(){
+        function verify(){
             alert('Chosen Sequences have been verified.');
+        }
+        function reject(){
+            alert('Chosen Sequences have been rejected.');
         }
     </script>
     </form>

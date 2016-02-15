@@ -1,13 +1,15 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect, HttpResponse
 from .models import Video, User, Sequence, Correction
 import os
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.template import loader
 
 
 def index(request, user_id):
     latest_video_list = Video.objects.order_by('name')[:5]
-    context = {'latest_video_list': latest_video_list,
-               'user': User.objects.get(uid=user_id)}
+    context = {'latest_video_list': latest_video_list}
     if user_id=="1":
         return render(request, 'index_admin.html', context)
     else:
@@ -118,7 +120,14 @@ def register(request):
     if request.method == 'POST':
         uname = request.POST.get('username')
         pw = request.POST.get('password')
+        user = User.objects.create_user(uname, '', pw)
+        user.save()
+        nuser = authenticate(username=uname, password=pw)
+        login(request, nuser)
+        return redirect('/2/index')
 
+    return render(request, 'register.html', {'message':''})
+"""
         if not (User.objects.filter(name=uname)):
             user = User(name=uname, password=pw)
             user.save()
@@ -130,21 +139,31 @@ def register(request):
 
     else:
         return render(request, 'register.html', {'message': ''})
+"""
 
-
-def login(request):
+def login_user(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         uname = request.POST.get('username')
         pw = request.POST.get('password')
-        if User.objects.filter(name=uname):
+        user = authenticate(username=uname, password=pw)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return redirect('/2/index')
+    return render(request, 'login.html', {'message': ''})
+"""        if User.objects.filter(name=uname):
             user = User.objects.get(name=uname)
             if user.password == pw:
                 return redirect('/' + str(user.uid) + '/index')
         return render(request, 'login.html', {'message': 'Unknown combination of username and password'})
     else:
         return render(request, 'login.html', {'message': ''})
+"""
 
+def logout_user(request):
+    logout(request)
+    return redirect('/')
 
 def correction(request, user_id):
     changed = []
@@ -168,11 +187,12 @@ def correction(request, user_id):
 
         for s in changed:
             corr = Correction.objects.get(cid=s)
-            rootseq = Sequence.objects.get(sid=corr.sid_id)
-            creator = corr.uids.split(',')
-            sequence = Sequence(vid=corr.vid, lang=rootseq.lang, content=corr.new_content, start=rootseq.start,
-                                end=rootseq.end, creator_id=creator[0], rating=0)
-            sequence.save()
+            if 'verify' in request.POST:
+                rootseq = Sequence.objects.get(sid=corr.sid_id)
+                creator = corr.uids.split(',')
+                sequence = Sequence(vid=corr.vid, lang=rootseq.lang, content=corr.new_content, start=rootseq.start,
+                                    end=rootseq.end, creator_id=creator[0], rating=0)
+                sequence.save()
             corr.verified = True
             corr.save()
 
