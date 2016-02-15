@@ -32,3 +32,9 @@ class Correction(models.Model):
     new_content = models.CharField(max_length=150)
     pub_date = models.DateTimeField(auto_now_add=True)
     verified = models.BooleanField(default=False)
+
+class Task(models.Model):
+    class Meta:
+        permissions = (
+            ("admin_permission", "Get's extra access"),
+        )

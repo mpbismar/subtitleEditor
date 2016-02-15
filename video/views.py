@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect, HttpResponse
 from .models import Video, UserStats, Sequence, Correction
@@ -6,13 +7,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.template import loader
 
-
+@login_required
 def index(request):
-    latest_video_list = Video.objects.order_by('name')[:5]
-    context = {'latest_video_list': latest_video_list}
-    return render(request, 'index.html', context)
+        latest_video_list = Video.objects.order_by('name')[:5]
+        context = {'latest_video_list': latest_video_list}
+        return render(request, 'index.html', context)
 
-
+@login_required
 def video(request, video_id):
     user_id = request.user.id
     if Video.objects.filter(vid=video_id):
@@ -180,6 +181,8 @@ def logout_user(request):
     logout(request)
     return redirect('/')
 
+@login_required
+@permission_required('auth.admin_view', '/index')
 def correction(request):
     changed = []
     correction_list = Correction.objects.filter(verified=False).order_by('uids')
@@ -221,9 +224,11 @@ def correction(request):
     }
     return render(request, 'correction.html',context)
 
+@login_required
+@permission_required('auth.admin_view', '/index')
 def statistics(request):
-    users_rate = User.objects.exclude(n_rate = 0).order_by('-n_rate')[:10]
-    users_corr = User.objects.exclude(n_cor = 0).order_by('-n_cor')[:10]
+    users_rate = UserStats.objects.exclude(n_rate = 0).order_by('-n_rate')[:10]
+    users_corr = UserStats.objects.exclude(n_cor = 0).order_by('-n_cor')[:10]
     context = {
         'users_rate': users_rate,
         'users_corr': users_corr
