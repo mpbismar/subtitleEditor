@@ -20,38 +20,38 @@ def video(request, video_id):
         idvideo = Video.objects.get(vid=video_id)
         times = Sequence.objects.filter(vid_id=video_id, lang=idvideo.sub_langs.split(',')[0])\
             .order_by('start').values('start','end').distinct()
+        userstat = UserStats.objects.filter(id=user_id).first()
         if request.method == 'POST':
             if request.POST.get('subedit'):
                 new_con = request.POST.get('subedit')
                 start = request.POST.get('start')
-                exists = False
                 refer_seq = Sequence.objects.filter(vid_id=video_id,start=start).order_by('creator_id').first()
-                for seq in Sequence.objects.filter(vid_id=video_id,start=start):
-                    if seq.content == new_con:
-                        exists = True
-                if not exists:
-                    corrs = Correction.objects.filter(vid_id=video_id,sid_id=refer_seq.sid)
-                    if corrs:
-                        corr_exists = False
-                        for corr in corrs:
-                            uids = corr.uids.split(',')
-                            if corr.new_content==new_con:
-                                if not uids.__contains__(user_id):
-                                    uids.append(user_id)
-                                    corr.uids=','.join(uids)
-                                    corr.save()
-                                corr_exists = True
-                            else:
-                                if uids.__contains__(user_id):
-                                    uids.remove(user_id)
-                                    if not uids:
-                                        corr.delete() #doesn't work somehow
-                                    corr.uids=','.join(uids)
-                                    corr.save()
-                        if not corr_exists:
-                            Correction(sid_id=refer_seq.sid,vid_id=video_id,uids=user_id,new_content=new_con).save()
-                    else:
+                corrs = Correction.objects.filter(vid_id=video_id,sid_id=refer_seq.sid)
+                if corrs:
+                    corr_exists = False
+                    for corr in corrs:
+                        uids = corr.uids.split(',')
+                        if corr.new_content==new_con:
+                            if not uids.__contains__(user_id):
+                                uids.append(user_id)
+                                corr.uids=','.join(uids)
+                                corr.save()
+                            corr_exists = True
+                        else:
+                            if uids.__contains__(user_id):
+                                uids.remove(user_id)
+                                if not uids:
+                                    corr.delete() #doesn't work somehow
+                                corr.uids=','.join(uids)
+                                corr.save()
+                    if not corr_exists:
                         Correction(sid_id=refer_seq.sid,vid_id=video_id,uids=user_id,new_content=new_con).save()
+                        userstat.n_corr += 1
+                        userstat.save(force_update=True)
+                else:
+                    Correction(sid_id=refer_seq.sid,vid_id=video_id,uids=user_id,new_content=new_con).save()
+                    userstat.n_corr += 1
+                    userstat.save(force_update=True)
             else:
                 lang_id = request.POST.get('lang')
                 lang = idvideo.sub_langs.split(',')[int(lang_id)]
@@ -68,6 +68,9 @@ def video(request, video_id):
                         seq.rating += 1
                         seq.save(force_update=True)
                     version_id += 1
+                if userstat:
+                    userstat.n_rate += 1
+                    userstat.save(force_update=True)
 
         path = "video/static/subtitles/vtt/"
         if not os.path.exists(path):
