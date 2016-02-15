@@ -1,28 +1,26 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect, HttpResponse
-from .models import Video, User, Sequence, Correction
+from .models import Video, UserStats, Sequence, Correction
 import os
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.template import loader
 
 
-def index(request, user_id):
+def index(request):
     latest_video_list = Video.objects.order_by('name')[:5]
     context = {'latest_video_list': latest_video_list}
-    if user_id=="1":
-        return render(request, 'index_admin.html', context)
-    else:
-        return render(request, 'index.html', context)
+    return render(request, 'index.html', context)
 
 
-def video(request, user_id, video_id, edit):
+def video(request, video_id):
+    user_id = request.user.id
     if Video.objects.filter(vid=video_id):
         if request.method == 'POST':
             new_con = request.POST.get('subedit')
             start = request.POST.get('start')
             exists = False
-            refer_seq = Sequence.objects.filter(vid_id=video_id,start=start).order_by('creator__uid').first()
+            refer_seq = Sequence.objects.filter(vid_id=video_id,start=start).order_by('creator_id').first()
             for seq in Sequence.objects.filter(vid_id=video_id,start=start):
                 if seq.content == new_con:
                     exists = True
@@ -64,7 +62,7 @@ def video(request, user_id, video_id, edit):
             i = 0
             for time in times:
                 refer_sub = Sequence.objects.filter(vid_id=video_id, lang=lang, start=time.get("start", 0))\
-                    .order_by('creator__uid').first()
+                    .order_by('creator_id').first()
                 sub = Sequence.objects.filter(vid_id=video_id, lang=lang, start=time.get("start", 0)).order_by('rating').first()
                 corrs = Correction.objects.filter(sid_id=refer_sub.sid)
                 if corrs:
@@ -107,7 +105,6 @@ def video(request, user_id, video_id, edit):
         context = {'idvideo': idvideo,
                    'subs_all': subs_all,
                    'sub_langs': idvideo.sub_langs.split(","),
-                   'edit': edit == "edit",
                    'times': times,
                    'nseq': times.__len__()}
         return render(request, 'video.html', context)
@@ -124,7 +121,7 @@ def register(request):
         user.save()
         nuser = authenticate(username=uname, password=pw)
         login(request, nuser)
-        return redirect('/2/index')
+        return redirect('/index')
 
     return render(request, 'register.html', {'message':''})
 """
@@ -150,7 +147,7 @@ def login_user(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return redirect('/2/index')
+                return redirect('/index')
     return render(request, 'login.html', {'message': ''})
 """        if User.objects.filter(name=uname):
             user = User.objects.get(name=uname)
@@ -165,7 +162,7 @@ def logout_user(request):
     logout(request)
     return redirect('/')
 
-def correction(request, user_id):
+def correction(request):
     changed = []
     correction_list = Correction.objects.filter(verified=False).order_by('uids')
     initial_sequence = []
@@ -175,8 +172,8 @@ def correction(request, user_id):
             initial_sequence.append(Sequence.objects.get(sid=c.sid_id))
         users = c.uids.split(',')
         c.uids = int(users[0])
-        if User.objects.get(uid=c.uids) not in screator:
-            screator.append(User.objects.get(uid=c.uids))
+        if User.objects.get(id=c.uids) not in screator:
+            screator.append(User.objects.get(id=c.uids))
 
     if request.method == 'POST':
         seq = ''
@@ -196,7 +193,7 @@ def correction(request, user_id):
             corr.verified = True
             corr.save()
 
-        return redirect('/1/correction')
+        return redirect('/correction')
 
     context = {
         'correction_list': correction_list,
@@ -206,7 +203,7 @@ def correction(request, user_id):
     }
     return render(request, 'correction.html',context)
 
-def statistics(request, user_id):
+def statistics(request):
     users_rate = User.objects.exclude(n_rate = 0).order_by('-n_rate')[:10]
     users_corr = User.objects.exclude(n_cor = 0).order_by('-n_cor')[:10]
     context = {

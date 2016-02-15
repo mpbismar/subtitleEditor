@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Video(models.Model):
     vid = models.AutoField(primary_key=True)
@@ -7,12 +8,10 @@ class Video(models.Model):
     sub_langs = models.CharField(max_length=50)
     pub_date = models.DateTimeField(auto_now_add=True)
 
-class User(models.Model):
-    uid = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=40)
+class UserStats(models.Model):
+    uid = models.ForeignKey(User,to_field="id")
     n_rate = models.PositiveIntegerField(default=0)
     n_cor = models.PositiveIntegerField(default=0)
-    password  = models.CharField(max_length=40)
 
 class Sequence(models.Model):
     sid = models.AutoField(primary_key=True)
@@ -21,7 +20,7 @@ class Sequence(models.Model):
     content = models.CharField(max_length=150)
     start = models.PositiveIntegerField(serialize=False)
     end = models.PositiveIntegerField(serialize=False)
-    creator = models.ForeignKey(User,to_field="uid")
+    creator = models.ForeignKey(User,to_field="id")
     rating = models.PositiveIntegerField(default=0)
     pub_date = models.DateTimeField(auto_now_add=True)
 
