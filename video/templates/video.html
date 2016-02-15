@@ -6,7 +6,6 @@
 </head>
 <body>
 {% block content %}
-    <textarea id="out">test</textarea>
     {% for i in maxseq %}
         <button id="sub{{ i }}" onclick="rate{{ i }}()"></button>
     {% endfor %}
@@ -36,7 +35,6 @@
     </div>
     <form id="rate_form" action="" method="post"> {% csrf_token %}
     </form>
-    <script src="{% static 'js/video.js' %}"></script>
     <script>
         var player = videojs('video');
         var subs = [{% for i in maxseq %}document.getElementById('sub{{ i }}'),{% endfor %}0];
@@ -53,7 +51,7 @@
             player.currentTime(0);
             i = 0;
             document.getElementById('start').value=times[i][0];
-            play()
+            play();
         }
         function replay() {
             player.currentTime(times[i][0]/1000);
@@ -64,17 +62,16 @@
             out.innerHTML=ratings;
             document.getElementById('start').value=times[i][0];
             player.currentTime(times[i][0]/1000);
-            play()
+            play();
         }
         function play() {
-            player.pause();
             in1.type="text"
             in2.type="submit"
             for(k = 0; k < subs_all[0][i].length-1; k++) {
                 subs[k].innerHTML = subs_all[0][i][k];
                 subs[k].style.visibility = "visible";
             }
-            for(k = subs_all[0][i].length-1; k < 5; k++) {
+            for(k = subs_all[0][i].length-1; k < {{ maxseq }}; k++) {
                 subs[k].style.visibility = "hidden";
             }
             player.on('timeupdate', function (e) {
