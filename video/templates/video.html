@@ -6,9 +6,6 @@
 </head>
 <body>
 {% block content %}
-    {% for i in maxseq %}
-        <button id="sub{{ i }}" onclick="rate{{ i }}()"></button>
-    {% endfor %}
     <form id="subeditform" action="" method="post"> {% csrf_token %}
         <input id="in1" type="hidden" name="subedit" value="">
         <input id="in2" type="hidden" value=">">
@@ -35,6 +32,9 @@
     </div>
     <form id="rate_form" action="" method="post"> {% csrf_token %}
     </form>
+    {% for i in maxseq %}
+        <button id="sub{{ i }}" onclick="rate{{ i }}()"></button>
+    {% endfor %}
     <script>
         var player = videojs('video');
         var subs = [{% for i in maxseq %}document.getElementById('sub{{ i }}'),{% endfor %}0];

@@ -46,12 +46,21 @@ def video(request, video_id):
                                 corr.save()
                     if not corr_exists:
                         Correction(sid_id=refer_seq.sid,vid_id=video_id,uids=user_id,new_content=new_con).save()
-                        userstat.n_corr += 1
-                        userstat.save(force_update=True)
+                        if userstat:
+                            userstat.n_corr += 1
+                            userstat.save(force_update=True)
+                        else:
+                            userstat = UserStats.objects.create(n_rate=0,n_corr=1,uid_id=user_id)
+                            userstat.save(force_update=True)
+
                 else:
                     Correction(sid_id=refer_seq.sid,vid_id=video_id,uids=user_id,new_content=new_con).save()
-                    userstat.n_corr += 1
-                    userstat.save(force_update=True)
+                    if userstat:
+                        userstat.n_corr += 1
+                        userstat.save(force_update=True)
+                    else:
+                        userstat = UserStats.objects.create(n_rate=0,n_corr=1,uid_id=user_id)
+                        userstat.save(force_update=True)
             else:
                 lang_id = request.POST.get('lang')
                 lang = idvideo.sub_langs.split(',')[int(lang_id)]
@@ -70,6 +79,9 @@ def video(request, video_id):
                     version_id += 1
                 if userstat:
                     userstat.n_rate += 1
+                    userstat.save(force_update=True)
+                else:
+                    userstat = UserStats.objects.create(n_rate=1,n_corr=0,uid_id=user_id)
                     userstat.save(force_update=True)
 
         path = "video/static/subtitles/vtt/"
@@ -231,7 +243,11 @@ def correction(request):
 @permission_required('auth.admin_view', '/index')
 def statistics(request):
     users_rate = UserStats.objects.exclude(n_rate = 0).order_by('-n_rate')[:10]
-    users_corr = UserStats.objects.exclude(n_cor = 0).order_by('-n_cor')[:10]
+    for ur in users_rate:
+        ur.id = User.objects.get(id=ur.uid_id)
+    users_corr = UserStats.objects.exclude(n_corr = 0).order_by('-n_corr')[:10]
+    for uc in users_corr:
+        uc.id = User.objects.get(id=ur.uid_id)
     context = {
         'users_rate': users_rate,
         'users_corr': users_corr
