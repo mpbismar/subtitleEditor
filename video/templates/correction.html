@@ -34,8 +34,8 @@
             <section>
                 <td>
                     {% for cr in screator %}
-                            {% if correction.uids == cr.uid %}
-                                <p>{{ cr.name }}</p>
+                            {% if correction.uids == cr.id.id %}
+                                <p>{{ cr.id.username }}</p>
                             {% endif %}
                     {% endfor %}
                 </td>
@@ -84,7 +84,8 @@
 {% block navbar_button %}
            <div id="navbar" class="navbar-collapse collapse">
           <form class="navbar-form navbar-right">
-              <button style="background-color: lightgrey; color: black;  margin-right: 10px" class="btn btn-default btn-primary" type="submit" formaction="/1/index" formmethod="">Back</button>
+              <!--<button style="background-color: lightgrey; color: black;  margin-right: 10px" class="btn btn-default btn-primary" type="submit" formaction="/index" formmethod="">Back</button>-->
+              <a style="color: white; font-size: 20px; padding-right: 10px;">{{ user.get_username }}</a>
             <button class="btn btn-warning btn-primary" type="submit" formaction="/logout" formmethod="">Logout</button>
           </form>
         </div><!--/.navbar-collapse -->

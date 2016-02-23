@@ -6,14 +6,6 @@
         <title>SubHPI: Register</title>
     </head>
     <body>
-  <!--  <div id="login" class="container">
-        <form id="form" action="" method="post">{% csrf_token %}<br><br>
-            Username:<input id="userin" type="text" name="username"><br><br>
-            Password:<input id="passin" type="password" name="password"><br><br>
-            <input type="submit" value="Sign up"><button id="reg" formaction="../login/" formmethod="">Back</button>
-        </form>
-        <p id="m">{{ message }}</p>
-    </div>-->
     {% block content %}
       <form class="form-signin" method="post">{% csrf_token %}
         <h2 class="form-signin-heading">Please register</h2>
@@ -29,10 +21,9 @@
     {% block navbar_button %}
           <div id="navbar" class="navbar-collapse collapse">
           <form class="navbar-form navbar-right">
-            <button class="btn btn-success btn-primary btn-block" type="submit" formaction="/login/" formmethod="">Sign in</button>
+            <button class="btn btn-success btn-primary btn-block" type="submit" formaction="/login/">Sign in</button>
           </form>
-        </div><!--/.navbar-collapse -->
+        </div>
      {% endblock %}
-    </body>
     </body>
 </html>

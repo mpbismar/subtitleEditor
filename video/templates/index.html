@@ -1,37 +1,41 @@
 {% extends 'base.html' %}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>SubHPI: Videos</title>
-    </head>
-    <body>
-   {% block content %}
-        <h2 style="padding-left: 200px" id="headline">Videos</h2>
-        {% if latest_video_list %}
-            <div style="padding-left: 200px" class="list-group">
+<head>
+    <meta charset="UTF-8">
+    <title>SubHPI: Videos</title>
+</head>
+<body>
+{% block content %}
+    <h2 style="padding-left: 200px" id="headline">Videos</h2>
+    {% if latest_video_list %}
+        <div style="padding-left: 200px" class="list-group">
             <ul>
                 {% for video in latest_video_list %}
                     <a style="width: 400px" href="{{ video.vid }}/" class="list-group-item">{{ video.name }}</a>
                 {% endfor %}
             </ul>
-            </div>
-        {% else %}
-            <p>No videos are available.</p>
-        {% endif %}
-   {% endblock %}
-       {% block navbar_button %}
-           <div id="navbar" class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right">
-              {% if perms.auth.admin_view %}
-                <button style="margin-right: 10px" class="btn btn-info btn-primary" type="submit" formaction="/correction" formmethod="">Correction Table</button>
-                <button style="margin-right: 100px" class="btn btn-info btn-primary" type="submit" formaction="/statistics" formmethod="">Statistics</button>
-              {% endif %}
-              <a style="color: white; font-size: 20px; padding-right: 10px;">{{ user.get_username }}</a>
-            <button class="btn btn-warning btn-primary" type="submit" formaction="/logout" formmethod="">Logout</button>
-          </form>
-        </div><!--/.navbar-collapse -->
-    {% endblock %}
+        </div>
+    {% else %}
+        <p>No videos are available.</p>
+    {% endif %}
+{% endblock %}
+{% block navbar_button %}
+    <div id="navbar" class="navbar-collapse collapse">
+        <form class="navbar-form navbar-right">
+            {% if perms.auth.admin_view %}
+                <button style="margin-right: 10px" class="btn btn-info btn-primary" type="submit"
+                        formaction="/correction">Correction Table
+                </button>
+                <button style="margin-right: 100px" class="btn btn-info btn-primary" type="submit"
+                        formaction="/statistics">Statistics
+                </button>
+            {% endif %}
+            <a style="color: white; font-size: 20px; padding-right: 10px;">{{ user.get_username }}</a>
+            <button class="btn btn-warning btn-primary" type="submit" formaction="/logout">Logout</button>
+        </form>
+    </div>
+{% endblock %}
 
-    </body>
+</body>
 </html>

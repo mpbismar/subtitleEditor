@@ -2,22 +2,25 @@
 <!DOCTYPE html>
 <html lang="en-IE">
 <head>
-	<title>SubHPI: {{ idvideo.name }}</title>
+    <title>SubHPI: {{ idvideo.name }}</title>
 </head>
 <body>
 {% block content %}
     <form id="subeditform" action="" method="post"> {% csrf_token %}
         <input id="in1" type="hidden" name="subedit" value="">
-        <input id="in2" type="hidden" value=">">
-        <input id="start" type="hidden" name="start" value="0">
+        <input id="in2" type="hidden" value="Edit">
+        <input id="start" name="start" type="hidden" value="0">
+        <input id="lang" name="lang" type="hidden" value="">
     </form>
-	<h1 margin="100px">{{ idvideo.name }}</h1>
+    <h1 margin="100px">{{ idvideo.name }}</h1>
     <video id="video" class="video-js" controls preload="auto" width="900" height="600" data-setup="{}">
         <source src="/static/video/{{ idvideo.name }}.mp4" type="video/mp4">
         <source src="/static/video/{{ idvideo.name }}.webm" type="video/webm">
         {% for sub_lang in sub_langs %}
-            <track label="{{ sub_lang }}" kind="subtitles" srclang="{{ sub_lang }}" src="/static/subtitles/vtt/{{ idvideo.name }}_{{ sub_lang }}.vtt" default>
+            <track label="{{ sub_lang }}" kind="subtitles" srclang="{{ sub_lang }}"
+                   src="/static/subtitles/vtt/{{ idvideo.name }}_{{ sub_lang }}.vtt" default>
         {% endfor %}
+
         <p class="vjs-no-js">
             To view this video please enable JavaScript, and consider upgrading to a web browser that
             <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
@@ -25,57 +28,107 @@
     </video>
 
     <div id="controls">
-        <button onclick="rate()">Rate</button>
-        <button onclick="replay()">Replay</button>
-        <button onclick="toNext()">Next</button>
-        <button onclick="submit()">Submit Changes</button>
+        <button style="display:none" class="rating" onclick="replay()">Replay</button>
+        <button style="display:none" class="rating" onclick="toNext()">Next</button>
+        <button style="display:none" class="rating" onclick="submit()">Submit Changes</button>
     </div>
     <form id="rate_form" action="" method="post"> {% csrf_token %}
+        <input id="lang2" name="lang" type="hidden" value="">
     </form>
     {% for i in maxseq %}
-        <button id="sub{{ i }}" onclick="rate{{ i }}()"></button>
+        <input id="sub{{ i }}" type="hidden" onclick="rate{{ i }}()">
     {% endfor %}
     <script>
+        var rating = false;
         var player = videojs('video');
+        var subslength = {{ subs_all|length }}
+        if(subslength > 0)
+        {
+            var videoJsButtonClass = videojs.getComponent('Button');
+            var concreteButtonClass = videojs.extend(videoJsButtonClass, {
+                constructor: function () {
+                    videoJsButtonClass.call(this, player);
+                },
+
+                handleClick: function () {
+                    rate();
+                }
+            });
+
+            var concreteButtonInstance = player.controlBar.addChild(new concreteButtonClass());
+            concreteButtonInstance.el_.innerHTML = 'Rate';
+        }
+
+        var subscount = {{ subs_all|first|length }};
         var subs = [{% for i in maxseq %}document.getElementById('sub{{ i }}'),{% endfor %}0];
         var subedit = document.getElementById('subeditform');
-        var out = document.getElementById('out');
         var in1 = document.getElementById('in1');
         var in2 = document.getElementById('in2');
         var nseq = {{ nseq }};
         var times = [{% for time in times %} [{{ time.start }}, {{ time.end }}], {% endfor %}0];
-        var subs_all = [{%for subs_lang in subs_all%}[{%for subs in subs_lang%}[{%for sub in subs%}"{{ sub.content }}",{% endfor %}0],{% endfor %}0],{% endfor %}0]
-        var ratings = [{% for time in times %}-1, {% endfor %}0]
+        var subs_all = [{%for subs_lang in subs_all%}[
+                {%for subs in subs_lang%}[{%for sub in subs%}'{% autoescape off %}{{ sub }}{% endautoescape %}',
+                {% endfor %}0],{% endfor %}0],{% endfor %}0];
+        var ratings = [{% for time in times %}-1, {% endfor %}0];
         var i = 0;
         function rate() {
-            player.currentTime(0);
-            i = 0;
-            document.getElementById('start').value=times[i][0];
-            play();
+            if(rating == false) {
+                rating = true;
+                var buttons = document.getElementsByClassName("rating");
+                for (i = 0; i < buttons.length; i++) {
+                    buttons[i].style.display = 'inline';
+                }
+                player.currentTime(0);
+                i = 0;
+                document.getElementById('start').value = times[i][0];
+                play();
+            }
+            else{
+                rating = false;
+                var buttons = document.getElementsByClassName("rating");
+                for (i = 0; i < buttons.length; i++) {
+                    buttons[i].style.display = 'none';
+                }
+                in1.type = "hidden";
+                in2.type = "hidden";
+                for(var k = 0; k < {{ maxseq|length }}; k++) {
+                    subs[k].type = "hidden";
+                }
+            }
         }
         function replay() {
-            player.currentTime(times[i][0]/1000);
+            player.currentTime(times[i][0] / 1000);
             play();
         }
         function toNext() {
-            i = i + 1;
-            out.innerHTML=ratings;
-            document.getElementById('start').value=times[i][0];
-            player.currentTime(times[i][0]/1000);
-            play();
+            if(i<subscount) {
+                i = i + 1;
+                document.getElementById('start').value = times[i][0];
+                player.currentTime(times[i][0] / 1000);
+                play();
+            }
         }
         function play() {
-            in1.type="text"
-            in2.type="submit"
-            for(k = 0; k < subs_all[0][i].length-1; k++) {
-                subs[k].innerHTML = subs_all[0][i][k];
-                subs[k].style.visibility = "visible";
+            var lang_name = document.getElementsByClassName("vjs-menu-item vjs-selected").item(0).innerHTML.toString().split(/[<]/)[0];
+            var lang_id = -1;
+            {% for sub in subs_dict %}
+                if("{{ sub }}"==lang_name){
+                    lang_id = {{ forloop.counter }} - 1;
+                }
+            {% endfor %}
+            document.getElementById('lang').value = lang_name;
+            document.getElementById('lang2').value = lang_name;
+            in1.type = "text";
+            in2.type = "submit";
+            for (k = 0; k < subs_all[lang_id][i].length - 1; k++) {
+                subs[k].value = subs_all[lang_id][i][k];
+                subs[k].type = "submit";
             }
-            for(k = subs_all[0][i].length-1; k < {{ maxseq }}; k++) {
-                subs[k].style.visibility = "hidden";
+            for (var k = subs_all[lang_id][i].length - 1; k < {{ maxseq|length }}; k++) {
+                subs[k].type = "hidden";
             }
-            player.on('timeupdate', function (e) {
-                if (player.currentTime() >= times[i][1]/1000) {
+            player.on('timeupdate', function () {
+                if (player.currentTime() >= (times[i][1] / 1000) - 1) {
                     player.pause();
                 }
             });
@@ -83,36 +136,30 @@
         }
         function submit() {
             var form = document.getElementById("rate_form");
-            for(var i=0; i<ratings.length-1;i++) {
+            for (var i = 0; i < ratings.length - 1; i++) {
                 var hiddenField = document.createElement("input");
                 hiddenField.setAttribute("type", "hidden");
-                hiddenField.setAttribute("name", "r"+i);
-                hiddenField.setAttribute("value", ratings[i]);
+                hiddenField.setAttribute("name", "ratefield");
+                hiddenField.setAttribute("value", ratings);
                 form.appendChild(hiddenField);
             }
-            var hiddenField = document.createElement("input");
-            hiddenField.setAttribute("type", "hidden");
-            hiddenField.setAttribute("name", "lang");
-            hiddenField.setAttribute("value", 0);
-            form.appendChild(hiddenField);
-            document.body.appendChild(form);
             form.submit();
         }
         {% for i in maxseq %}
-        function rate{{ i }}() {
-            ratings[i]= {{ i }};
-            toNext();
-        }
+            function rate{{ i }}() {
+                ratings[i] = {{ i }};
+                toNext();
+            }
         {% endfor %}
     </script>
 {% endblock %}
 {% block navbar_button %}
-           <div id="navbar" class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right">
-            <button style="background-color: lightgrey; color: black;  margin-right: 10px" class="btn btn-default btn-primary" type="submit" formaction="/index" formmethod="">Back</button>
-            <button class="btn btn-warning btn-primary" type="submit" formaction="/logout" formmethod="">Logout</button>
-          </form>
-        </div><!--/.navbar-collapse -->
+    <div id="navbar" class="navbar-collapse collapse">
+        <form class="navbar-form navbar-right">
+            <a style="color: white; font-size: 20px; padding-right: 10px;">{{ user.get_username }}</a>
+            <button class="btn btn-warning btn-primary" type="submit" formaction="/logout">Logout</button>
+        </form>
+    </div>
 {% endblock %}
 </body>
 </html>

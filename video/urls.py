@@ -10,4 +10,3 @@ urlpatterns = [
     url(r'^statistics/?$', views.statistics, name='statistics')
 
 ]
-
